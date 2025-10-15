@@ -56,11 +56,11 @@
  const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         
-            var probe_duration = 1000;
-            var prime_duration = 133;
-            var blank_duration = 33;
-            var probe_stim_duration = 133;
-	         var debug = 0;
+            const probe_duration = 1000;
+            const prime_duration = 133;
+            const blank_duration = 33;
+            const probe_stim_duration = 133;
+	         const debug = 0;
          
    const stimulus = [
      {
@@ -210,10 +210,11 @@
     type: jsPsychHtmlKeyboardResponse,
     stimulus: jsPsych.timelineVariable('prime'),
     choices: "NO_KEYS",
-	trial_duration: function(){return prime_duration},
+	trial_duration: prime_duration,
+   /*function(){return prime_duration},
     data:{
         task:"prime"
-    }
+    }*/
 }
 
 //Blank//
@@ -221,42 +222,50 @@
     type: jsPsychHtmlKeyboardResponse,
     stimulus: ' ',
     choices: "NO_KEYS",
-	trial_duration: function(){return blank_duration},
+	trial_duration: blank_duration
+    /*function(){return blank_duration},
     data:{
         task:"blank"
-    }
+    }*/
 }
 //Probe//
    const probe_trial = {
     type: jsPsychHtmlKeyboardResponse,            
     stimulus: jsPsych.timelineVariable('probe'),
     choices: ["a", "i", "d", "n"],
-	stimulus_duration: function(){
-		console.log("stimdur: " + probe_stim_duration)
-		return probe_stim_duration},
-	trial_duration: function(){return probe_duration},
+   stimulus_duration: function() {
+    console.log("stimdur:", probe_stim_duration);
+    return probe_stim_duration;
+  },
+  trial_duration: probe_duration,
+  on_finish: function(data) {
+    console.log("Response data:", data);
+    console.log("Key pressed:", data.response);
+  }
+}
+   /*function(){return probe_duration},
    data: {
         correct_response: jsPsych.timelineVariable('correct_response'),
         task: "probe",
         congruency: jsPsych.timelineVariable('congruency'),
         name: jsPsych.timelineVariable('name')
     },
-    /*on_finish: function(data) {
+    on_finish: function(data) {
         console.log(blockindex);
         data.correct = data.response === data.correct_response;
         }*/
-    }
+
  
       
    //Trial sequence//
-   const block_neutral = {
+const block_neutral = {
   timeline: [fixation, prime_trial, blank, probe_trial],
-  timeline_variables: stimulus,
-};
+  timeline_variables: stimulus
+}
 
 const block_red = {
   timeline: [fixation, prime_trial, blank, probe_trial],
-  timeline_variables: red_stimulus,
+  timeline_variables: red_stimulus
 }
 
 const trial_sequence = {
@@ -264,6 +273,17 @@ const trial_sequence = {
   randomize_order: true,
   repetitions: 1
 }
+
+/*function shuffle_all_sessions() {
+        const experimental_array =  [block_neutral, block_red];
+        const shuffledArray = experimental_array.sort((a, b) => 0.5 - Math.random());
+        console.log(shuffledArray);
+        return shuffledArray;
+        }
+
+const experimental_blocks = {
+  timeline: shuffle_all_sessions() 
+}*/
 
    timeline.push(trial_sequence);
    jsPsych.run(timeline) 
