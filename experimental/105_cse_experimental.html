@@ -10,11 +10,12 @@
         <script src='jspsych/dist/plugin-html-slider-response.js'></script>
         <script src='jspsych/dist/plugin-survey-text.js'></script>
         <link href='jspsych/dist/jspsych.css' rel='stylesheet' type='text/css' />
-        <link href="styles.css" rel="stylesheet" type="text/css" />
-   	    <!-- <script src="jatos.js"></script> -->
+        <link href='styles.css' rel='stylesheet' type='text/css' />
+        <!-- <script src="jatos.js"></script> -->
     </head>
     <body></body>
     <script>
+       const jsPsych = initJsPsych()
        /*const jsPsych = initJsPsych({
 	      on_trial_start: function() {
 		    console.log(jatos.version)
@@ -42,7 +43,26 @@
       /*informed consent*/
       /*instructions*/
       /*practice trials*/
-      const stimulus = [
+
+      const timeline = [];
+      const prac_instructions = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `<h2>Gyakorló blokk</h2>
+            <p>A kísérlet megkezdése előtt egy rövid gyakorló blokk következik. Ebben a blokkban nem vonunk le garast a hibás válaszokért, azonban törekedj a minél gyorsabb és pontosabb válaszadásra! 
+            Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`
+}
+
+
+ const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        
+            var probe_duration = 1000;
+            var prime_duration = 133;
+            var blank_duration = 33;
+            var probe_stim_duration = 133;
+	         var debug = 0;
+         
+   const stimulus = [
      {
         prime: '<span style="font-size: 35px;">le<br>le<br>le</span>',
         probe: '<span style="font-size: 35px;">fel</span>',
@@ -50,23 +70,20 @@
         correct_response: 'i',
         name: 'stimulus'
      },
-     {
-         
+     {  
         prime: '<span style="font-size: 35px;">fel<br>fel<br>fel</span>',
         probe: '<span style="font-size: 35px;">le</span>',
         congruency: 'incongruent',
         correct_response: 'n',
-        name: 'practice'
+        name: 'stimulus'
 
      },
      {
-        
-        prime: '<span style="font-size: 35px;"">le<br>le<br>le</span>',
+        prime: '<span style="font-size: 35px;">le<br>le<br>le</span>',
         probe: '<span style="font-size: 35px;">le</span>',
         congruency: 'congruent',
         correct_response: 'n',
-        name: 'practice'
-        
+        name: 'stimulus'
      },
      {
         
@@ -74,8 +91,7 @@
         probe: '<span style="font-size: 35px;">fel</span>',
         congruency: 'congruent',
         correct_response: 'i',
-        name: 'practice'
-       
+        name: 'stimulus'
      },
      {
          
@@ -83,34 +99,173 @@
         probe: '<span style="font-size: 35px;">jobb</span>',
         congruency: 'incongruent',
         correct_response: 'd',
-        name: 'practice'
-     
+        name: 'stimulus'
      },
      {
-       
         prime: '<span style="font-size: 35px;">jobb<br>jobb<br>jobb</span>',
         probe: '<span style="font-size: 35px;">bal</span>',
         congruency: 'incongruent',
         correct_response: 'a',
-        name: 'practice'
-       
+        name: 'stimulus'
      },
      {
-         
         prime: '<span style="font-size: 35px;">bal<br>bal<br>bal</span>',
         probe: '<span style="font-size: 35px;">bal</span>',
         congruency: 'congruent',
         correct_response: 'a',
-        name: 'practice'
-       
+        name: 'stimulus'
      },
      {
         prime: '<span style="font-size: 35px;">jobb<br>jobb<br>jobb</span>',
         probe: '<span style="font-size: 35px;">jobb</span>',
         congruency: 'congruent',
         correct_response: 'd',
-        name: 'practice'
+        name: 'stimulus'
      }
     ]
+
+    const red_stimulus = [
+     {
+        prime: '<span style="font-size: 35px;">le<br>le<br>le</span>',
+        probe: '<span style="font-size: 35px; color: #e60602;">fel</span>',
+        congruency: 'incongruent',
+        correct_response: 'i',
+        name: 'red_stimulus'
+     },
+     {  
+        prime: '<span style="font-size: 35px;">fel<br>fel<br>fel</span>',
+        probe: '<span style="font-size: 35px; color: #e60602;">le</span>',
+        congruency: 'incongruent',
+        correct_response: 'n',
+        name: 'red_stimulus'
+
+     },
+     {
+        prime: '<span style="font-size: 35px;">le<br>le<br>le</span>',
+        probe: '<span style="font-size: 35px; color: #e60602;">le</span>',
+        congruency: 'congruent',
+        correct_response: 'n',
+        name: 'red_stimulus'
+     },
+     {
+        
+        prime: '<span style="font-size: 35px;">fel<br>fel<br>fel</span>',
+        probe: '<span style="font-size: 35px; color: #e60602;">fel</span>',
+        congruency: 'congruent',
+        correct_response: 'i',
+        name: 'red_stimulus'
+     },
+     {
+         
+        prime: '<span style="font-size: 35px;">bal<br>bal<br>bal</span>',
+        probe: '<span style="font-size: 35px; color: #e60602;">jobb</span>',
+        congruency: 'incongruent',
+        correct_response: 'd',
+        name: 'red_stimulus'
+     },
+     {
+        prime: '<span style="font-size: 35px;">jobb<br>jobb<br>jobb</span>',
+        probe: '<span style="font-size: 35px; color: #e60602;">bal</span>',
+        congruency: 'incongruent',
+        correct_response: 'a',
+        name: 'red_stimulus'
+     },
+     {
+        prime: '<span style="font-size: 35px;">bal<br>bal<br>bal</span>',
+        probe: '<span style="font-size: 35px; color: #e60602;">bal</span>',
+        congruency: 'congruent',
+        correct_response: 'a',
+        name: 'red_stimulus'
+     },
+     {
+        prime: '<span style="font-size: 35px;">jobb<br>jobb<br>jobb</span>',
+        probe: '<span style="font-size: 35px; color: #e60602;">jobb</span>',
+        congruency: 'congruent',
+        correct_response: 'd',
+        name: 'red_stimulus'
+     }
+    ]
+
+
+//Fixation//
+   const fixation = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<div style="font-size:60px;">+</div>',
+    choices: "NO_KEYS",
+    trial_duration: Math.random() * (600 - 400) + 400,
+    /*trial_duration: function() {
+        if (debug == 1){
+            return 1;
+        }else{
+            return Math.random() * (600 - 400) + 400;
+        }
+    },*/
+    data: {
+        task: 'fixation'
+    }
+}
+
+//Prime//
+   const prime_trial = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: jsPsych.timelineVariable('prime'),
+    choices: "NO_KEYS",
+	trial_duration: function(){return prime_duration},
+    data:{
+        task:"prime"
+    }
+}
+
+//Blank//
+   const blank = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: ' ',
+    choices: "NO_KEYS",
+	trial_duration: function(){return blank_duration},
+    data:{
+        task:"blank"
+    }
+}
+//Probe//
+   const probe_trial = {
+    type: jsPsychHtmlKeyboardResponse,            
+    stimulus: jsPsych.timelineVariable('probe'),
+    choices: ["a", "i", "d", "n"],
+	stimulus_duration: function(){
+		console.log("stimdur: " + probe_stim_duration)
+		return probe_stim_duration},
+	trial_duration: function(){return probe_duration},
+   data: {
+        correct_response: jsPsych.timelineVariable('correct_response'),
+        task: "probe",
+        congruency: jsPsych.timelineVariable('congruency'),
+        name: jsPsych.timelineVariable('name')
+    },
+    /*on_finish: function(data) {
+        console.log(blockindex);
+        data.correct = data.response === data.correct_response;
+        }*/
+    }
+ 
+      
+   //Trial sequence//
+   const block_neutral = {
+  timeline: [fixation, prime_trial, blank, probe_trial],
+  timeline_variables: stimulus,
+};
+
+const block_red = {
+  timeline: [fixation, prime_trial, blank, probe_trial],
+  timeline_variables: red_stimulus,
+}
+
+const trial_sequence = {
+  timeline: [block_neutral, block_red],
+  randomize_order: true,
+  repetitions: 1
+}
+
+   timeline.push(trial_sequence);
+   jsPsych.run(timeline) 
     </script>
 </html>
