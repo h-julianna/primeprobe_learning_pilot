@@ -9,6 +9,7 @@
         <!-- <script src="mytrials.js"></script> -->
         <script src='jspsych/dist/plugin-html-slider-response.js'></script>
         <script src='jspsych/dist/plugin-survey-text.js'></script>
+        <script src="jspsych/dist/plugin-survey-multi-choice.js"></script>
         <link href='jspsych/dist/jspsych.css' rel='stylesheet' type='text/css' />
         <link href='styles.css' rel='stylesheet' type='text/css' />
         <!-- <script src="jatos.js"></script> -->
@@ -152,8 +153,40 @@ var jsPsych = initJsPsych()
             }
             }
                         };
-      
-        //console.log(demographic_timeline);
+      //Demographic informations
+
+var education = {
+  type: jsPsychSurveyMultiChoice,
+  questions: [
+    {
+      prompt: "<strong>Mi a legmagasabb iskolai végzettséged?</strong>",
+      name: "education",
+      options: ["Általános iskola", "Szakközépiskola", "Szakgimnázium", "Gimnázium", "Főiskola", "Egyetem, alapképzés", "Egyetem, mesterképzés", "Doktori képzés"],
+      required: true,
+      },
+      {
+          prompt: "<strong>Melyik a nemmel azonosulsz?</strong>",
+          name: "gender",
+          options: ["Férfi", "Nő", "Nem-bináris", "Nem szeretném megosztani"],
+          required: true
+      }
+  ],
+  button_label: "Tovább"
+};
+
+var age_neptun = {
+type: jsPsychSurveyText,
+questions: [
+  {prompt: "Hány éves vagy?", name: "age", required: true},
+  {prompt: "Mi a NEPTUN kódod?", name: "neptun", required: true}
+],
+button_label: "Tovább"
+};
+
+var demographic_timeline = [age_neptun, education]
+ console.log(demographic_timeline)
+
+
 
         //instructions//
         var instructions = {
@@ -407,7 +440,7 @@ const experimental_blocks = {
 /* Practice block */
 
 
-   timeline.push(welcome,data_handling,informed_consent,instructions, trial_sequence);
+   timeline.push(welcome,data_handling,informed_consent, demographic_timeline,instructions, trial_sequence);
    jsPsych.run(timeline) 
     </script>
 </html>
