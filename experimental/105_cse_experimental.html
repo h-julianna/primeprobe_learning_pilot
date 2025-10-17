@@ -15,7 +15,7 @@
     </head>
     <body></body>
     <script>
-       const jsPsych = initJsPsych()
+       /*const jsPsych = initJsPsych()
        /*const jsPsych = initJsPsych({
 	      on_trial_start: function() {
 		    console.log(jatos.version)
@@ -44,15 +44,133 @@
       /*instructions*/
       /*practice trials*/
 
+
+
+
       const timeline = [];
-      const prac_instructions = {
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: `<h2>Gyakorló blokk</h2>
-            <p>A kísérlet megkezdése előtt egy rövid gyakorló blokk következik. Ebben a blokkban nem vonunk le garast a hibás válaszokért, azonban törekedj a minél gyorsabb és pontosabb válaszadásra! 
-            Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`
-}
+
+       var subj_code; //a variable that later stores a random subject code
+        function makeid(length) {
+            var result = '';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for (var i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        } //this function generates a random string of characters
 
 
+var jsPsych = initJsPsych()
+/*({
+	on_finish: () => jatos.endStudy(jsPsych.data.get().json())
+})
+
+        subj_code = makeid(6); //generating a random subject code
+
+        console.log(subj_code); //printing the subject code to the console
+
+        jsPsych.data.addProperties({subj_code: subj_code}); //adding the subject code to the data object
+       
+        var version = jsPsych.randomization.sampleWithoutReplacement([1,2],1)[0]; //Ezzel tudjuk majd váltogatni szerintem a kondíciókat. Majd 5 lesz összesen, szóval, a 2-es helyére 5 jön. */
+        
+        
+        //defining welcome message//
+        var welcome = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: `
+            <img src="Experimental material/University_logo.png" alt=University Logo" style="width: 300px; display: block; margin: auto;">
+            <h2>Üdvözlünk a Metatudomány kutatócsoport vizsgálatában!</h2>
+                <p>Egy tudományos kutatásban veszel részt, amelynek vezetője Bognár Miklós, az ELTE Affektív Pszichológia Tanszékének kutatója. 
+                A kutatás célja megvizsgálni, hogy miként hatnak a büntetés által kiváltott negatív motivációs állapotok a kognitív kontrollra.</p>
+                <h3>Részvétel</h3>
+                <p>A kutatásban való részvétel teljesen önkéntes. A vizsgálatot bármikor indoklás nélkül megszakíthatod. Ha bármilyen kérdésed, észrevételed vagy problémád van a kutatással kapcsolatban, írj Bognár Miklósnak a <a href="mailto:bognar.miklos@ppk.elte.hu">bognar.miklos@ppk.elte.hu</a> címre.</p>`,
+            choices: ['Tovább']
+        };
+       
+
+
+        //data handling and informed consent//
+        var data_handling = {   
+            type: jsPsychHtmlButtonResponse,
+            stimulus: `<h2 style="text-align: center;">Adatkezelési tájékoztató</h2>
+            <p style="text-align: justify; max-width: 800px; margin: auto;">Szigorúan bizalmasan kezelünk minden olyan személyes információt, amit a kutatás keretén belül gyűjtünk össze. 
+                A kutatás során nyert adatokat kóddal ellátva biztonságos számítógépeken tároljuk. A kutatás során nyert adatokat összegezzük. 
+                Az ELTE PPK Affektív Pszichológia Tanszék Metatudomány Kutatócsoportja, mint adatkezelő, fenti személyes adataidat bizalmasan kezeli, más adatkezelőnek, adatfeldolgozónak nem adja át.
+                E tényállás részleteit a <a href="http://metasciencelab.elte.hu/hozzajarulas-adatkezeleshez/" target=_blank">"Hozzájárulás adatkezeléshez"</a> c. dokumentum tartalmazza.</p>
+
+            <p>Az adatkezelésről szóló szabályzásról részletesebben pedig itt tájékozódhatsz:
+                <a href="https://ppk.elte.hu/file/Hozzajarulas_adatkezeleshez_melleklet_2018.pdf" target="_blank">Hozzájárulás adatkezeléshez melléklet</a></p>
+            <p>A kutatás során nyert személyes adataidat arra használjuk fel, hogy regisztrálhassuk a részvételért járó kurzuspontokat. 
+            Az azonosítására alkalmas adatokat (NEPTUN kód) ezután törölni fogjuk. A kezelt adatok a következők:</p>
+
+                <ul>
+                    <li>NEPTUN-kód</li>
+                    <li>Életkor</li>
+                    <li>Nem</li>
+                    <li>Iskolai végzettség</li>
+                </ul>
+            <p>Válaszaid nem lesznek semmilyen módon hozzád köthetők. Az anonimizált adataidat más kutatókkal megosztjuk.</p>
+            <p><strong>Kérlek, amennyiben egyetértesz a fenti feltételekkel, és hozzájárulsz a kutatásban való részvételhez, kattints az "Igen" gombra.</strong></p>`,
+            choices: ['Igen', 'Nem'],
+            response_ends_trial: true,
+            on_finish: function(data) {
+            if (data.response == 1) {
+                jsPsych.abortExperiment('<p style="text-align: justify; max-width: 800px; margin: auto; font-size: 24px; font-weight: bold">A kísérlet véget ért. Köszönjük, hogy részt vettél a vizsgálatban!</p>');
+            }
+            }
+        };
+       
+
+        //informed consent//
+        var informed_consent = {
+            type:jsPsychHtmlButtonResponse,
+            stimulus: `<h2>Beleegyező nyilatkozat</h2>
+                <p>Felelősségem teljes tudatában kijelentem, hogy a mai napon az Eötvös Loránd Tudományegyetem, Bognár Miklós kutatásvezető által végzett vizsgálatban</p>
+                 <ul>
+                    <li>önként veszek részt.</li>
+                    <li>a vizsgálat jellegéről, annak megkezdése előtt kielégítő tájékoztatást kaptam.</li>
+                    <li>nem szenvedek semmilyen pszichiátriai betegségben.</li>
+                    <li>a vizsgálat idején alkohol vagy drogok hatása alatt nem állok.</li>
+                 </ul>
+
+                <p>Tudomásul veszem, hogy az azonosításomra alkalmas személyi adataimat bizalmasan kezelik.
+                    Hozzájárulok ahhoz, hogy a vizsgálat során a rólam felvett, személyem azonosítására nem alkalmas adatok más kutatók számára is hozzáférhetők legyenek.
+                    Fenntartom a jogot arra, hogy a vizsgálat során annak folytatásától bármikor elállhassak. 
+                    Ilyen esetben a rólam addig felvett adatokat törölni kell.</p>
+.
+                <p>Tudomásul veszem, hogy csak a teljesen befejezett kitöltésért kapok pontot a <em>Pszichológiai kísérletben és tudományos aktivitásban való részvétel</em> nevű kurzuson.</p>
+
+                <p><strong>A kutatásban való részvételem körülményeiről részletes tájékoztatást kaptam, a feltételekkel egyetértek. 
+                    Amennyiben egyetértesz a fenti feltételekkel, kattints az "Igen" gombra.</strong></p>`,
+            choices: ['Igen', 'Nem'],
+            response_ends_trial: true,
+            on_finish: function(data) {
+                //console.log(blockset[0][0].prime);
+            if (data.response == 1) {
+                jsPsych.abortExperiment('<p style="text-align: justify; max-width: 800px; margin: auto; font-size: 24px; font-weight: bold">A kísérlet véget ért. Köszönjük, hogy részt vettél a vizsgálatban!</p>');
+            }
+            }
+                        };
+      
+        //console.log(demographic_timeline);
+
+        //instructions//
+        var instructions = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `<h2>Instrukciók</h2>
+                <p>Ebben a kísérletben arra vagyunk kíváncsiak, hogy miként befolyásolja a büntetés a konfliktusfeldolgozást. 
+                A kísérlet során iránymegjelöléseket fogsz olvasni (FEL, LE, JOBB, BAL). Először egy prime inger fog megjelenni a képernyőn, amin egy irány (pl.: „FEL”) lesz olvasható egymás alatt háromszor. 
+                Ezt követően megjelenik a célinger, ami vagy azonos („FEL”) vagy ellentétes („LE”) lesz az előtte bemutatott iránnyal.
+                A feladatod az lesz, hogy minél gyorsabban és pontosabban eltaláld a célinger irányát a hozzárendelt billentyű megnyomásával.</p> 
+                <p>Kérlek helyezd a billentyűzetre a kezedet a képen látható módon:</p>
+                <p>A bal középső ujjadat tedd az „a”-ra, ez lesz  a "BAL" irány. A mutató ujjadat a „d”-re, ez fogja jelölni a "JOBB" irányt.
+                    A jobb mutató ujjadat helyezd az „n”-re, ez lesz a "LE" irány. Míg a jobb középső ujjadat pedig tedd az „i”-re, ami a "FEL" irányt fogja jelölni!</p>
+                <img src="Experimental material/instruction_pic.png" alt="Hand placemante instructions" style="width: 40%; height: 40%;">
+                <p style="text-align: center;"><em>Amennyiben készen állsz a kísérlet megkezdésére, nyomd meg a space billentyűt!</em></p>`,
+            choices: [" "],
+        };
+    
  const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         
@@ -211,10 +329,10 @@
     stimulus: jsPsych.timelineVariable('prime'),
     choices: "NO_KEYS",
 	trial_duration: prime_duration,
-   /*function(){return prime_duration},
+   function(){return prime_duration},
     data:{
         task:"prime"
-    }*/
+    }
 }
 
 //Blank//
@@ -222,39 +340,35 @@
     type: jsPsychHtmlKeyboardResponse,
     stimulus: ' ',
     choices: "NO_KEYS",
-	trial_duration: blank_duration
-    /*function(){return blank_duration},
+	trial_duration: blank_duration,
+   function(){return blank_duration},
     data:{
         task:"blank"
-    }*/
+    }
 }
 //Probe//
-   const probe_trial = {
-    type: jsPsychHtmlKeyboardResponse,            
+const probe_trial = {
+    type: jsPsychHtmlKeyboardResponse,
     stimulus: jsPsych.timelineVariable('probe'),
     choices: ["a", "i", "d", "n"],
-   stimulus_duration: function() {
-    console.log("stimdur:", probe_stim_duration);
-    return probe_stim_duration;
-  },
-  trial_duration: probe_duration,
-  on_finish: function(data) {
-    console.log("Response data:", data);
-    console.log("Key pressed:", data.response);
-  }
-}
-   /*function(){return probe_duration},
-   data: {
+    stimulus_duration: function() {
+        console.log("stimdur:", probe_stim_duration);
+        return probe_stim_duration; 
+    },
+    trial_duration: probe_duration, 
+    response_ends_trial: false,   
+    data: {
         correct_response: jsPsych.timelineVariable('correct_response'),
         task: "probe",
         congruency: jsPsych.timelineVariable('congruency'),
         name: jsPsych.timelineVariable('name')
     },
     on_finish: function(data) {
-        console.log(blockindex);
+        console.log("Response data:", data);
+        console.log("Key pressed:", data.response);
         data.correct = data.response === data.correct_response;
-        }*/
-
+    }
+};
  
       
    //Trial sequence//
@@ -267,11 +381,15 @@ const block_red = {
   timeline: [fixation, prime_trial, blank, probe_trial],
   timeline_variables: red_stimulus
 }
+const trials = {
+  timeline: [block_neutral, block_red]
+}
 
 const trial_sequence = {
-  timeline: [block_neutral, block_red],
+  timeline: [fixation, prime_trial, blank, probe_trial],
+  timeline_variables: (stimulus).concat(red_stimulus),
   randomize_order: true,
-  repetitions: 1
+  repetitions: 2
 }
 
 /*function shuffle_all_sessions() {
@@ -285,7 +403,11 @@ const experimental_blocks = {
   timeline: shuffle_all_sessions() 
 }*/
 
-   timeline.push(trial_sequence);
+
+/* Practice block */
+
+
+   timeline.push(welcome,data_handling,informed_consent,instructions, trial_sequence);
    jsPsych.run(timeline) 
     </script>
 </html>
