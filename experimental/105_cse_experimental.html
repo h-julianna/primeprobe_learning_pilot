@@ -92,7 +92,7 @@ var jsPsych = initJsPsych()
 
 
         //data handling and informed consent//
-        var data_handling = {   
+        const data_handling = {   
             type: jsPsychHtmlButtonResponse,
             stimulus: `<h2 style="text-align: center;">Adatkezelési tájékoztató</h2>
             <p style="text-align: justify; max-width: 800px; margin: auto;">Szigorúan bizalmasan kezelünk minden olyan személyes információt, amit a kutatás keretén belül gyűjtünk össze. 
@@ -124,7 +124,7 @@ var jsPsych = initJsPsych()
        
 
         //informed consent//
-        var informed_consent = {
+        const informed_consent = {
             type:jsPsychHtmlButtonResponse,
             stimulus: `<h2>Beleegyező nyilatkozat</h2>
                 <p>Felelősségem teljes tudatában kijelentem, hogy a mai napon az Eötvös Loránd Tudományegyetem, Bognár Miklós kutatásvezető által végzett vizsgálatban</p>
@@ -153,6 +153,28 @@ var jsPsych = initJsPsych()
             }
             }
                         };
+
+
+const practice_instructions = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `<h2>Gyakorló blokk</h2>
+            <p>A kísérlet megkezdése előtt egy rövid gyakorló blokk következik. Ebben a blokkban nem vonunk le garast a hibás válaszokért, azonban törekedj a minél gyorsabb és pontosabb válaszadásra! 
+            Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`
+}
+
+const practice_intermission = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `<p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px"> Még egy rövid gyakorló blokk következik.
+        Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez. TÖREKEDJ RÁ TÖREKEDJ PRÓBÁLD</p>`,
+    choices: "ALL_KEYS",
+}
+
+const practice_end = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `<p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">A gyakorló rész véget ért, a kísérleti blokkok következnek.
+        Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`,
+    choices: "ALL_KEYS",
+}
       //Demographic informations
 
 var education = {
@@ -189,7 +211,7 @@ var demographic_timeline = [age_neptun, education]
 
 
         //instructions//
-        var instructions = {
+        const instructions = {
             type: jsPsychHtmlKeyboardResponse,
             stimulus: `<h2>Instrukciók</h2>
                 <p>Ebben a kísérletben arra vagyunk kíváncsiak, hogy miként befolyásolja a büntetés a konfliktusfeldolgozást. 
@@ -425,6 +447,34 @@ const trial_sequence = {
   repetitions: 2
 }
 
+const practice_block = {
+    timeline: [fixation, prime_trial, blank, probe_trial],
+    timeline_variables: (stimulus).concat(red_stimulus),
+    randomize_order: true,
+    repetitions: 2/*, (kikommenteltem h ne fusson örökké ikszdé)
+    loop_function: function(data) {
+	if(debug == 0){
+        console.log(data);
+        var correct_trials = data.filter({task: "probe",correct: true}).count();
+        console.log(correct_trials);
+        var total_trials = data.filter({task: "probe"}).count();
+        
+        if (total_trials > 0) {
+            var accuracy = (correct_trials / total_trials) * 100;
+            console.log("Accuracy:", accuracy + "%");
+            if (accuracy >= 80) {
+                return false;
+            } else {
+                return true;
+            }
+          
+        }
+    }else{
+	return false;
+    }
+    } */
+};
+
 /*function shuffle_all_sessions() {
         const experimental_array =  [block_neutral, block_red];
         const shuffledArray = experimental_array.sort((a, b) => 0.5 - Math.random());
@@ -437,10 +487,24 @@ const experimental_blocks = {
 }*/
 
 
-/* Practice block */
+const all_practice = {
+    timeline: [practice_instructions, practice_block, practice_intermission, practice_block, practice_end]
+  }
 
-
-   timeline.push(welcome,data_handling,informed_consent, demographic_timeline,instructions, trial_sequence);
+   timeline.push(welcome,data_handling,informed_consent, all_practice, demographic_timeline,instructions, trial_sequence);
    jsPsych.run(timeline) 
     </script>
 </html>
+
+
+
+
+
+
+
+const practice_end = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `<p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">A gyakorló rész véget ért, a kísérleti blokkok következnek.
+        Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`,
+    choices: "ALL_KEYS",
+}
