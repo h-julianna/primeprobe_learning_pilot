@@ -491,20 +491,7 @@ const all_practice = {
     timeline: [practice_instructions, practice_block, practice_intermission, practice_block, practice_end]
   }
 
-   timeline.push(welcome,data_handling,informed_consent, all_practice, demographic_timeline,instructions, trial_sequence);
+   timeline.push(welcome,data_handling,informed_consent, demographic_timeline, instructions, all_practice, trial_sequence);
    jsPsych.run(timeline) 
     </script>
 </html>
-
-
-
-
-
-
-
-const practice_end = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">A gyakorló rész véget ért, a kísérleti blokkok következnek.
-        Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`,
-    choices: "ALL_KEYS",
-}
