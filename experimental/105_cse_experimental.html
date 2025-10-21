@@ -96,10 +96,9 @@ type: jsPsychHtmlButtonResponse,
             Az azonosítására alkalmas adatokat (NEPTUN kód) ezután törölni fogjuk. A kezelt adatok a következők:</p>
 
                 <ul>
-                    <li>NEPTUN-kód</li>
                     <li>Életkor</li>
+                    <li>NEPTUN-kód</li>
                     <li>Nem</li>
-                    <li>Iskolai végzettség</li>
                 </ul>
             <p>Válaszaid nem lesznek semmilyen módon hozzád köthetők. Az anonimizált adataidat más kutatókkal megosztjuk.</p>
             <p><strong>Kérlek, amennyiben egyetértesz a fenti feltételekkel, és hozzájárulsz a kutatásban való részvételhez, kattints az "Igen" gombra.</strong></p>`,
@@ -178,24 +177,6 @@ const experiment_end = {
 }
       //Demographic informations
 
-var education = {
-  type: jsPsychSurveyMultiChoice,
-  questions: [
-    {
-      prompt: "<strong>Mi a legmagasabb iskolai végzettséged?</strong>",
-      name: "education",
-      options: ["Általános iskola", "Szakközépiskola", "Szakgimnázium", "Gimnázium", "Főiskola", "Egyetem, alapképzés", "Egyetem, mesterképzés", "Doktori képzés"],
-      required: true,
-      },
-      {
-          prompt: "<strong>Melyik a nemmel azonosulsz?</strong>",
-          name: "gender",
-          options: ["Férfi", "Nő", "Nem-bináris", "Nem szeretném megosztani"],
-          required: true
-      }
-  ],
-  button_label: "Tovább"
-};
 
 var age_neptun = {
 type: jsPsychSurveyText,
@@ -206,7 +187,14 @@ questions: [
 button_label: "Tovább"
 };
 
-var demographic_timeline = [age_neptun, education]
+var gender = {
+type: jsPsychSurveyMultiChoice,
+questions: [
+    {prompt: "Melyik a nemmel azonosulsz?", name: "gender", options: ["Férfi", "Nő", "Nem-bináris", "Nem szeretném megosztani"] ,required: true},
+], button_label: "Tovább"
+};
+
+var demographic_timeline = [age_neptun, gender]
  console.log(demographic_timeline)
 
 
@@ -360,55 +348,55 @@ const instructions = {
      }
     ]
 
-// practice trials: red stimulus always followed by black stimulus
+//PRACTICE: red trials can only be followed by black trials
 function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
+    return array.sort(() => Math.random() - 0.5);  //reorders items (-0.5-0.5 neg or pos decides sort order)
 }
 
-// Create mixed stimuli with controlled proportions
-function createPracticeSequence(stimulus, red_stimulus, totalTrials = 40) {
-    const nRed = Math.floor(totalTrials * 0.25);
-    const nNormal = totalTrials - nRed;
+//creates the practice sequence with proportions
+function create_practice_sequence(stimulus, red_stimulus, total_practice_trials = 40) { //not sure abt number of totaltrials
+    const n_redpracticetrials = Math.floor(total_practice_trials * 0.25); //sets the proportion so 0.25 of trials are red (not sure abt number again lol)
+    const n_neutralpracticetrials = total_practice_trials - n_redpracticetrials; //-II-
 
-    // pick random trials
-    let normalTrials = [];
-    while (normalTrials.length < nNormal) {
-        normalTrials = normalTrials.concat(shuffle(stimulus));
+//pick random trials
+let neutralpracticetrials = [];
+    while (neutralpracticetrials.length < n_neutralpracticetrials) { //randomly selects n number of neutral trials
+        neutralpracticetrials = neutralpracticetrials.concat(shuffle(stimulus)); //adds them to neutral trials array
     }
-    normalTrials = normalTrials.slice(0, nNormal);
+    neutralpracticetrials = neutralpracticetrials.slice(0, n_neutralpracticetrials); //array is the right length
 
-    let redTrials = [];
-    while (redTrials.length < nRed) {
-        redTrials = redTrials.concat(shuffle(red_stimulus));
+    let redpracticetrials = []; //same thing
+    while (redpracticetrials.length < n_redpracticetrials) {
+        redpracticetrials = redpracticetrials.concat(shuffle(red_stimulus));
     }
-    redTrials = redTrials.slice(0, nRed);
+    redpracticetrials = redpracticetrials.slice(0, n_redpracticetrials);
 
-    // now interleave without consecutive reds
-    let sequence = [];
-    while (normalTrials.length > 0 || redTrials.length > 0) {
-        if (sequence.length === 0 || sequence[sequence.length - 1].name === "red_stimulus") {
-            if (normalTrials.length > 0) {
-                sequence.push(normalTrials.shift());
-            } else if (redTrials.length > 0) {
-                sequence.push(redTrials.shift());
+
+    let practicesequence = []; //sequence: final ordered array of trials
+    while (neutralpracticetrials.length > 0 || redpracticetrials.length > 0) { //loop until both trials empty
+        if (practicesequence.length === 0 || practicesequence[practicesequence.length - 1].name === "red_stimulus") { //if its the first trial or last trial was red, cant place another red
+            if (neutralpracticetrials.length > 0) {
+                practicesequence.push(neutralpracticetrials.shift()); //removes first neutral trial and adds it to sequence
+            } else if (redpracticetrials.length > 0) { //if we ran out of neutrals we gotta add a red
+                practicesequence.push(redpracticetrials.shift());
             }
         } else {
-            // last was normal, can place either
-            if (redTrials.length > 0 && Math.random() < 0.25) { // maintain ~25% red
-                sequence.push(redTrials.shift());
-            } else if (normalTrials.length > 0) {
-                sequence.push(normalTrials.shift());
-            } else if (redTrials.length > 0) {
-                sequence.push(redTrials.shift());
+            //last was neutral, can place either
+            if (redpracticetrials.length > 0 && Math.random() < 0.25) { //keeping the proportions
+                practicesequence.push(redpracticetrials.shift());
+            } else if (neutralpracticetrials.length > 0) { //otherwise a neutral trial is placed
+                practicesequence.push(neutralpracticetrials.shift());
+            } else if (redpracticetrials.length > 0) { //in case we ran out of neutrals
+                practicesequence.push(redpracticetrials.shift());
             }
         }
     }
 
-    return sequence;
+    return practicesequence; //returns ordered array of trials
 }
 
-// Generate the practice sequence
-const mixed_practice_stimuli = createPracticeSequence(stimulus, red_stimulus, 40);
+const practicestimuli = create_practice_sequence(stimulus, red_stimulus, 40); //has the stimuli with no cons. reds and proportionate
+
 //Fixation//
    const fixation = {
     type: jsPsychHtmlKeyboardResponse,
@@ -498,7 +486,7 @@ const trial_sequence = {
 
 const practice_block = {
     timeline: [fixation, prime_trial, blank, probe_trial],
-    timeline_variables: mixed_practice_stimuli
+    timeline_variables: practicestimuli
 /*, (kikommenteltem h ne fusson örökké ikszdé)
     loop_function: function(data) {
 	if(debug == 0){
@@ -523,7 +511,7 @@ const practice_block = {
     } */
 };
 
-/*function shuffle_all_sessions() {
+/*function shuffle_all_sessions() {  //lowkey not sure if we'll need this
         const experimental_array =  [block_neutral, block_red];
         const shuffledArray = experimental_array.sort((a, b) => 0.5 - Math.random());
         console.log(shuffledArray);
