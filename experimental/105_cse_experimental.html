@@ -16,7 +16,6 @@
     </head>
     <body></body>
     <script>
-       /*const jsPsych = initJsPsych()
        /*const jsPsych = initJsPsych({
 	      on_trial_start: function() {
 		    console.log(jatos.version)
@@ -36,8 +35,7 @@
 	      console.log(probe_duration)
 	    },
 	    on_finish: () => jatos.endStudy(jsPsych.data.get().csv())
-      }) 
-      */
+      })
     
       /*welcome message*/
       /*data handling and informed consent*/
@@ -47,37 +45,30 @@
 
 
 
-
-      const timeline = [];
-
-       var subj_code; //a variable that later stores a random subject code
-        function makeid(length) {
-            var result = '';
-            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            var charactersLength = characters.length;
-            for (var i = 0; i < length; i++) {
-                result += characters.charAt(Math.floor(Math.random() * charactersLength));
-            }
-            return result;
-        } //this function generates a random string of characters
+const jsPsych = initJsPsych()
+const timeline = [];
 
 
-var jsPsych = initJsPsych()
+var subj_code; //a variable that later stores a random subject code
+function makeid(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+    }
+subj_code = makeid(6);
+console.log(subj_code);
+
 /*({
 	on_finish: () => jatos.endStudy(jsPsych.data.get().json())
 })
+*/
+jsPsych.data.addProperties({subj_code: subj_code}); //adding the subject code to the data object
 
-        subj_code = makeid(6); //generating a random subject code
-
-        console.log(subj_code); //printing the subject code to the console
-
-        jsPsych.data.addProperties({subj_code: subj_code}); //adding the subject code to the data object
-       
-        var version = jsPsych.randomization.sampleWithoutReplacement([1,2],1)[0]; //Ezzel tudjuk majd váltogatni szerintem a kondíciókat. Majd 5 lesz összesen, szóval, a 2-es helyére 5 jön. */
-        
-        
-        //defining welcome message//
-        var welcome = {
+const welcome = {
             type: jsPsychHtmlButtonResponse,
             stimulus: `
             <img src="Experimental material/University_logo.png" alt=University Logo" style="width: 300px; display: block; margin: auto;">
@@ -87,13 +78,12 @@ var jsPsych = initJsPsych()
                 <h3>Részvétel</h3>
                 <p>A kutatásban való részvétel teljesen önkéntes. A vizsgálatot bármikor indoklás nélkül megszakíthatod. Ha bármilyen kérdésed, észrevételed vagy problémád van a kutatással kapcsolatban, írj Bognár Miklósnak a <a href="mailto:bognar.miklos@ppk.elte.hu">bognar.miklos@ppk.elte.hu</a> címre.</p>`,
             choices: ['Tovább']
-        };
-       
+        };       
+        
 
-
-        //data handling and informed consent//
-        const data_handling = {   
-            type: jsPsychHtmlButtonResponse,
+//data handling and informed consent//
+const data_handling = {   
+type: jsPsychHtmlButtonResponse,
             stimulus: `<h2 style="text-align: center;">Adatkezelési tájékoztató</h2>
             <p style="text-align: justify; max-width: 800px; margin: auto;">Szigorúan bizalmasan kezelünk minden olyan személyes információt, amit a kutatás keretén belül gyűjtünk össze. 
                 A kutatás során nyert adatokat kóddal ellátva biztonságos számítógépeken tároljuk. A kutatás során nyert adatokat összegezzük. 
@@ -174,6 +164,17 @@ const practice_end = {
     stimulus: `<p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">A gyakorló rész véget ért, a kísérleti blokkok következnek.
         Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`,
     choices: "ALL_KEYS",
+}
+
+
+const experiment_end = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus:
+         function() { `<h2>Kísérlet vége</h2>
+        <p>Köszönjük, hogy részt vettél a vizsgálatban!</p>`
+        return `<h2>Kísérlet vége</h2> <p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px"> Köszönjük, hogy részt vettél a vizsgálatban!</p>`
+    },
+    choices: "ALL_KEYS"
 }
       //Demographic informations
 
@@ -491,7 +492,7 @@ const all_practice = {
     timeline: [practice_instructions, practice_block, practice_intermission, practice_block, practice_end]
   }
 
-   timeline.push(welcome,data_handling,informed_consent, demographic_timeline, instructions, all_practice, trial_sequence);
+   timeline.push(welcome, data_handling, informed_consent, demographic_timeline, instructions, all_practice, trial_sequence, experiment_end);
    jsPsych.run(timeline) 
     </script>
 </html>
