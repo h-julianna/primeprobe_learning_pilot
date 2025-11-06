@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>105_cse_experiment</title>
+        <title>107_cse_experiment</title>
         <script src='jspsych/dist/jspsych.js'></script>
         <script src='jspsych/dist/plugin-html-keyboard-response.js'></script>
         <script src='jspsych/dist/plugin-html-button-response.js'></script>
         <script src='jspsych/dist/plugin-fullscreen.js'></script>
-        <!-- <script src="mytrials.js"></script> -->
+        <script src='mytrials.js'></script>
         <script src='jspsych/dist/plugin-html-slider-response.js'></script>
         <script src='jspsych/dist/plugin-survey-text.js'></script>
-        <script src="jspsych/dist/plugin-survey-multi-choice.js"></script>
+        <script src='jspsych/dist/plugin-survey-multi-choice.js'></script>
         <link href='jspsych/dist/jspsych.css' rel='stylesheet' type='text/css' />
         <link href='styles.css' rel='stylesheet' type='text/css' />
         <!-- <script src="jatos.js"></script> -->
@@ -37,37 +37,30 @@
 	    on_finish: () => jatos.endStudy(jsPsych.data.get().csv())
       })
     
-      /*welcome message*/
       /*data handling and informed consent*/
       /*informed consent*/
       /*instructions*/
       /*practice trials*/
 
-
-
-const jsPsych = initJsPsych()
-const timeline = [];
-
-
+// initialize jsPsych
+    const jsPsych = initJsPsych()
+    const timeline = [];
+//creating and storing subject codes
 var subj_code; //a variable that later stores a random subject code
-function makeid(length) {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-    }
-subj_code = makeid(6);
+    function makeid(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+        }
+    subj_code = makeid(6);
 console.log(subj_code);
-
-/*({
-	on_finish: () => jatos.endStudy(jsPsych.data.get().json())
-})
-*/
 jsPsych.data.addProperties({subj_code: subj_code}); //adding the subject code to the data object
 
+//welcome message
 const welcome = {
             type: jsPsychHtmlButtonResponse,
             stimulus: `
@@ -81,7 +74,7 @@ const welcome = {
         };       
         
 
-//data handling and informed consent//
+//data handling and informed consent
 const data_handling = {   
 type: jsPsychHtmlButtonResponse,
             stimulus: `<h2 style="text-align: center;">Adatkezelési tájékoztató</h2>
@@ -112,8 +105,8 @@ type: jsPsychHtmlButtonResponse,
         };
        
 
-        //informed consent//
-        const informed_consent = {
+//informed consent//
+const informed_consent = {
             type:jsPsychHtmlButtonResponse,
             stimulus: `<h2>Beleegyező nyilatkozat</h2>
                 <p>Felelősségem teljes tudatában kijelentem, hogy a mai napon az Eötvös Loránd Tudományegyetem, Bognár Miklós kutatásvezető által végzett vizsgálatban</p>
@@ -143,63 +136,27 @@ type: jsPsychHtmlButtonResponse,
             }
                         };
 
-
-const practice_instructions = {
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: `<h2>Gyakorló blokk</h2>
-            <p>A kísérlet megkezdése előtt egy rövid gyakorló blokk következik. Ebben a blokkban nem vonunk le garast a hibás válaszokért, azonban törekedj a minél gyorsabb és pontosabb válaszadásra! 
-            Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`
-}
-
-const practice_intermission = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px"> Még egy rövid gyakorló blokk következik.
-        Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez. TÖREKEDJ RÁ TÖREKEDJ PRÓBÁLD</p>`,
-    choices: "ALL_KEYS",
-}
-
-const practice_end = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">A gyakorló rész véget ért, a kísérleti blokkok következnek.
-        Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`,
-    choices: "ALL_KEYS",
-}
-
-
-const experiment_end = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus:
-         function() { `<h2>Kísérlet vége</h2>
-        <p>Köszönjük, hogy részt vettél a vizsgálatban!</p>`
-        return `<h2>Kísérlet vége</h2> <p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px"> Köszönjük, hogy részt vettél a vizsgálatban!</p>`
-    },
-    choices: "ALL_KEYS"
-}
-      //Demographic informations
-
-
-var age_neptun = {
-type: jsPsychSurveyText,
-questions: [
-  {prompt: "Hány éves vagy?", name: "age", required: true},
-  {prompt: "Mi a NEPTUN kódod?", name: "neptun", required: true}
+//demographic informations
+const age_neptun = {
+    type: jsPsychSurveyText,
+    questions: [
+        {prompt: "Hány éves vagy?", name: "age", required: true},
+        {prompt: "Mi a NEPTUN kódod?", name: "neptun", required: true}
 ],
-button_label: "Tovább"
+    button_label: "Tovább"
 };
-
-var gender = {
-type: jsPsychSurveyMultiChoice,
-questions: [
-    {prompt: "Melyik a nemmel azonosulsz?", name: "gender", options: ["Férfi", "Nő", "Nem-bináris", "Nem szeretném megosztani"] ,required: true},
-], button_label: "Tovább"
+const gender = {
+    type: jsPsychSurveyMultiChoice,
+    questions: [
+        {prompt: "Melyik a nemmel azonosulsz?", name: "gender", options: ["Férfi", "Nő", "Nem-bináris", "Nem szeretném megosztani"] ,required: true},
+],  button_label: "Tovább"
 };
-
-var demographic_timeline = [age_neptun, gender]
- console.log(demographic_timeline)
-
+const demographic_timeline = [age_neptun, gender]
+    console.log(demographic_timeline)
 
 
-        //instructions//
+
+//instructions//
 const instructions = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `<h2>Instrukciók</h2>
@@ -214,30 +171,71 @@ const instructions = {
                 <p style="text-align: center;"><em>Amennyiben készen állsz a kísérlet megkezdésére, nyomd meg a space billentyűt!</em></p>`,
             choices: [" "],
         };
-    
- const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
+
+const practice_instructions = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `<h2>Gyakorló blokk</h2>
+            <p>A kísérlet megkezdése előtt egy rövid gyakorló blokk következik. Ebben a blokkban nem vonunk le garast a hibás válaszokért, azonban törekedj a minél gyorsabb és pontosabb válaszadásra! 
+            Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`
+}
+
+const practice_intermission = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: function() {
+    // initial display with timer placeholder
+    return `<div style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">
+      <p>Még egy rövid gyakorló blokk következik.<br>
+      Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>
+      <p><strong>A blokk automatikusan elindul 2 perc múlva.</strong></p>
+      <p id="timer" style="font-size: 28px; color: darkred;">Kezdés: 2:00</p>
+    </div>`;
+  },
+  choices: "ALL_KEYS",
+  trial_duration: 120000, // 2 minutes
+  on_load: function() {
+    let timeLeft = 120; // seconds
+    const timerDisplay = document.getElementById('timer');
+    const countdown = setInterval(() => {
+      timeLeft--;
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerDisplay.textContent = `Kezdés: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      if (timeLeft <= 0) clearInterval(countdown);
+    }, 1000);
+  }
+};
+
+const practice_end = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `<p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">A gyakorló rész véget ért, a kísérleti blokkok következnek.
+        Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`,
+    choices: "ALL_KEYS",
+}
+
+//trial parameters
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
         
-            const probe_duration = 1000;
-            const prime_duration = 133;
-            const blank_duration = 33;
-            const probe_stim_duration = 133;
-	         const debug = 0;
-         
-   const stimulus = [
+const probe_duration = 1000;
+const prime_duration = 133;
+const blank_duration = 33;
+const probe_stim_duration = 133;
+const debug = 0;
+ //defining the trials
+    const stimulus = [
      {
         prime: '<span style="font-size: 35px;">le<br>le<br>le</span>',
         probe: '<span style="font-size: 35px;">fel</span>',
         congruency: 'incongruent',
         correct_response: 'i',
-        name: 'stimulus'
+        name: 'black_stimulus'
      },
      {  
         prime: '<span style="font-size: 35px;">fel<br>fel<br>fel</span>',
         probe: '<span style="font-size: 35px;">le</span>',
         congruency: 'incongruent',
         correct_response: 'n',
-        name: 'stimulus'
+        name: 'black_stimulus'
 
      },
      {
@@ -245,7 +243,7 @@ const instructions = {
         probe: '<span style="font-size: 35px;">le</span>',
         congruency: 'congruent',
         correct_response: 'n',
-        name: 'stimulus'
+        name: 'black_stimulus'
      },
      {
         
@@ -253,7 +251,7 @@ const instructions = {
         probe: '<span style="font-size: 35px;">fel</span>',
         congruency: 'congruent',
         correct_response: 'i',
-        name: 'stimulus'
+        name: 'black_stimulus'
      },
      {
          
@@ -261,28 +259,28 @@ const instructions = {
         probe: '<span style="font-size: 35px;">jobb</span>',
         congruency: 'incongruent',
         correct_response: 'd',
-        name: 'stimulus'
+        name: 'black_stimulus'
      },
      {
         prime: '<span style="font-size: 35px;">jobb<br>jobb<br>jobb</span>',
         probe: '<span style="font-size: 35px;">bal</span>',
         congruency: 'incongruent',
         correct_response: 'a',
-        name: 'stimulus'
+        name: 'black_stimulus'
      },
      {
         prime: '<span style="font-size: 35px;">bal<br>bal<br>bal</span>',
         probe: '<span style="font-size: 35px;">bal</span>',
         congruency: 'congruent',
         correct_response: 'a',
-        name: 'stimulus'
+        name: 'black_stimulus'
      },
      {
         prime: '<span style="font-size: 35px;">jobb<br>jobb<br>jobb</span>',
         probe: '<span style="font-size: 35px;">jobb</span>',
         congruency: 'congruent',
         correct_response: 'd',
-        name: 'stimulus'
+        name: 'black_stimulus'
      }
     ]
 
@@ -347,6 +345,91 @@ const instructions = {
         name: 'red_stimulus'
      }
     ]
+//fixation//
+   const fixation = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<div style="font-size:60px;">+</div>',
+    choices: "NO_KEYS",
+    trial_duration: Math.random() * (600 - 400) + 400,
+    /*trial_duration: function() {
+        if (debug == 1){
+            return 1;
+        }else{
+            return Math.random() * (600 - 400) + 400;
+        }
+    },*/
+    data: {
+        task: 'fixation'
+    }
+}
+//prime//
+   const prime_trial = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: jsPsych.timelineVariable('prime'),
+    choices: "NO_KEYS",
+	trial_duration: prime_duration,
+   function(){return prime_duration},
+    data:{
+        task:"prime"
+    }
+}
+//blank//
+   const blank = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: ' ',
+    choices: "NO_KEYS",
+	trial_duration: blank_duration,
+   function(){return blank_duration},
+    data:{
+        task:"blank"
+    }
+}
+//probe//
+    const probe_trial = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: jsPsych.timelineVariable('probe'),
+    choices: ["a", "i", "d", "n"],
+    stimulus_duration: function() {
+        console.log("stimdur:", probe_stim_duration);
+        return probe_stim_duration; 
+    },
+    trial_duration: probe_duration, 
+    response_ends_trial: false,   
+    data: {
+        correct_response: jsPsych.timelineVariable('correct_response'),
+        task: "probe",
+        congruency: jsPsych.timelineVariable('congruency'),
+        name: jsPsych.timelineVariable('name')
+    },
+    on_finish: function(data) {
+        console.log("Response data:", data);
+        console.log("Key pressed:", data.response);
+        data.correct = data.response === data.correct_response;
+    }
+};
+
+// ready-to-go stimuli converted from the a randomized JSON
+const randomized_stimuli = prime_probe_trials.trials.map((block, block_index) => {
+  const formatted_block = block.map(trial => {
+    // reformatting the stimuli into HTML structures
+    const primeHTML = `<span style="font-size: 35px;">${trial.prime.replace(/\n/g, "<br>")}</span>`;
+    const probeHTML = `<span style="font-size: 35px; ${trial.color === 'red' ? 'color: #e60602;' : ''}">${trial.probe}</span>`;
+
+    return {
+      prime: primeHTML,
+      probe: probeHTML,
+      congruency: trial.congruency,
+      correct_response: trial.correct_response,
+      name: trial.name,
+      block: block_index + 1  // label each trial with its block number
+    };
+  });
+  return formatted_block; // flatten in case of nested arrays
+});
+
+console.log("Loaded randomized blocks:", randomized_stimuli.length);
+
+
 
 //PRACTICE: red trials can only be followed by black trials
 function shuffle(array) {
@@ -397,93 +480,6 @@ let neutralpracticetrials = [];
 
 const practicestimuli = create_practice_sequence(stimulus, red_stimulus, 40); //has the stimuli with no cons. reds and proportionate
 
-//Fixation//
-   const fixation = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: '<div style="font-size:60px;">+</div>',
-    choices: "NO_KEYS",
-    trial_duration: Math.random() * (600 - 400) + 400,
-    /*trial_duration: function() {
-        if (debug == 1){
-            return 1;
-        }else{
-            return Math.random() * (600 - 400) + 400;
-        }
-    },*/
-    data: {
-        task: 'fixation'
-    }
-}
-
-//Prime//
-   const prime_trial = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: jsPsych.timelineVariable('prime'),
-    choices: "NO_KEYS",
-	trial_duration: prime_duration,
-   function(){return prime_duration},
-    data:{
-        task:"prime"
-    }
-}
-
-//Blank//
-   const blank = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: ' ',
-    choices: "NO_KEYS",
-	trial_duration: blank_duration,
-   function(){return blank_duration},
-    data:{
-        task:"blank"
-    }
-}
-//Probe//
-const probe_trial = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: jsPsych.timelineVariable('probe'),
-    choices: ["a", "i", "d", "n"],
-    stimulus_duration: function() {
-        console.log("stimdur:", probe_stim_duration);
-        return probe_stim_duration; 
-    },
-    trial_duration: probe_duration, 
-    response_ends_trial: false,   
-    data: {
-        correct_response: jsPsych.timelineVariable('correct_response'),
-        task: "probe",
-        congruency: jsPsych.timelineVariable('congruency'),
-        name: jsPsych.timelineVariable('name')
-    },
-    on_finish: function(data) {
-        console.log("Response data:", data);
-        console.log("Key pressed:", data.response);
-        data.correct = data.response === data.correct_response;
-    }
-};
- 
-      
-   //Trial sequence//
-const block_neutral = {
-  timeline: [fixation, prime_trial, blank, probe_trial],
-  timeline_variables: stimulus
-}
-
-const block_red = {
-  timeline: [fixation, prime_trial, blank, probe_trial],
-  timeline_variables: red_stimulus
-}
-const trials = {
-  timeline: [block_neutral, block_red]
-}
-
-const trial_sequence = {
-  timeline: [fixation, prime_trial, blank, probe_trial],
-  timeline_variables: (stimulus).concat(red_stimulus),
-  randomize_order: true,
-  repetitions: 2
-}
-
 const practice_block = {
     timeline: [fixation, prime_trial, blank, probe_trial],
     timeline_variables: practicestimuli
@@ -510,6 +506,17 @@ const practice_block = {
     }
     } */
 };
+const all_practice = {
+    timeline: [practice_instructions, practice_block, practice_intermission, practice_block, practice_end]
+  }   
+//Trial sequence//
+const trial_sequence = {
+  timeline: [fixation, prime_trial, blank, probe_trial],
+  timeline_variables: randomized_stimuli.flat(),//flattened array of all blocks
+  randomize_order: false
+  
+};
+
 
 /*function shuffle_all_sessions() {  //lowkey not sure if we'll need this
         const experimental_array =  [block_neutral, block_red];
@@ -517,17 +524,78 @@ const practice_block = {
         console.log(shuffledArray);
         return shuffledArray;
         }
+*/
+//Define the main experimental trial structure
+const experimental_blocks = randomized_stimuli.map((block_stimuli, i) => {
+  return {
+    timeline: [fixation, prime_trial, blank, probe_trial],
+    timeline_variables: block_stimuli,
+    randomize_order: false,  // already randomized externally
+    on_timeline_start: () => {
+      console.log(`Starting Block ${i + 1}`);
+    }
+  };
+});
 
-const experimental_blocks = {
-  timeline: shuffle_all_sessions() 
-}*/
-
-
-const all_practice = {
-    timeline: [practice_instructions, practice_block, practice_intermission, practice_block, practice_end]
+//block intermission
+const block_intermission = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: function() {
+    // initial display with timer placeholder
+    return `<div style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">
+      <p>Még egy rövid gyakorló blokk következik.<br>
+      Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>
+      <p><strong>A blokk automatikusan elindul 2 perc múlva.</strong></p>
+      <p id="timer" style="font-size: 28px; color: darkred;">Kezdés: 2:00</p>
+    </div>`;
+  },
+  choices: "ALL_KEYS",
+  trial_duration: 120000, // 2 minutes
+  on_load: function() {
+    let timeLeft = 120; // seconds
+    const timerDisplay = document.getElementById('timer');
+    const countdown = setInterval(() => {
+      timeLeft--;
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerDisplay.textContent = `Kezdés: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      if (timeLeft <= 0) clearInterval(countdown);
+    }, 1000);
   }
+};
 
-   timeline.push(welcome, data_handling, informed_consent, demographic_timeline, instructions, all_practice, trial_sequence, experiment_end);
-   jsPsych.run(timeline) 
+//Build full experimental timeline
+const full_experiment = [
+  experimental_blocks
+];
+//add each block and a break (except after the last block)
+experimental_blocks.forEach((block, index) => {
+  full_experiment.push(block);
+  if (index < experimental_blocks.length - 1) {
+    full_experiment.push(block_intermission);
+  }
+});
+
+
+/* 
+If you later want to end the study automatically via JATOS:
+/*({
+	on_finish: () => jatos.endStudy(jsPsych.data.get().json())
+})
+*/
+//end of experiment
+const experiment_end = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus:
+         function() { `<h2>Kísérlet vége</h2>
+        <p>Köszönjük, hogy részt vettél a vizsgálatban!<br>A kísérlet részvételért járó pont az álábbi linken érhető el:</p>`
+        return `<h2>Kísérlet vége</h2> <p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px"> Köszönjük, hogy részt vettél a vizsgálatban!</p>`
+    },
+    choices: "ALL_KEYS"
+}
+
+
+timeline.push(full_experiment, data_handling, informed_consent, demographic_timeline, instructions, all_practice, experiment_end);
+jsPsych.run(timeline) 
     </script>
 </html>
