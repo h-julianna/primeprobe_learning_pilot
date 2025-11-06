@@ -435,46 +435,65 @@ console.log("Loaded randomized blocks:", randomized_stimuli.length);
 //PRACTICE: red trials can only be followed by black trials, no repeating trials, 4-16
 function createPracticeStimuli(stimulus, red_stimulus) {
   const n_total = 16;
-  const n_red = Math.round(n_total * 0.25); 
-  const n_black = n_total - n_red;
+  const n_red = Math.round(n_total * 0.25); // 4 red
+  const n_black = n_total - n_red;          // 12 black
 
+  const n_congruent = n_total / 2;          // 8
+  const n_incongruent = n_total / 2;        // 8
 
-  const blackSubset = jsPsych.randomization.sampleWithoutReplacement(stimulus, n_black);
-  const redSubset = jsPsych.randomization.sampleWithoutReplacement(red_stimulus, n_red);
+  // Split by congruency
+  const blackCongruent = stimulus.filter(s => s.congruency === "congruent");
+  const blackIncongruent = stimulus.filter(s => s.congruency === "incongruent");
+  const redCongruent = red_stimulus.filter(s => s.congruency === "congruent");
+  const redIncongruent = red_stimulus.filter(s => s.congruency === "incongruent");
 
-  const blackShuffled = jsPsych.randomization.shuffle(blackSubset);
-  const redShuffled = jsPsych.randomization.shuffle(redSubset);
+  // how many congruent/incongruent trials should be red vs black
+  const n_red_congruent = Math.floor(n_red / 2);
+  const n_red_incongruent = n_red - n_red_congruent;
+  const n_black_congruent = n_congruent - n_red_congruent;
+  const n_black_incongruent = n_incongruent - n_red_incongruent;
 
-  const gaps = Array.from({ length: blackShuffled.length + 1 }, () => []);
-  const gapIndices = jsPsych.randomization.shuffle([...Array(gaps.length).keys()]);
+  // sample with replacement if limited
+  const selected = [
+    ...jsPsych.randomization.sampleWithReplacement(blackCongruent, n_black_congruent),
+    ...jsPsych.randomization.sampleWithReplacement(blackIncongruent, n_black_incongruent),
+    ...jsPsych.randomization.sampleWithReplacement(redCongruent, n_red_congruent),
+    ...jsPsych.randomization.sampleWithReplacement(redIncongruent, n_red_incongruent),
+  ];
 
-  for (let i = 0; i < redShuffled.length; i++) {
-    gaps[gapIndices[i]].push(redShuffled[i]);
+  let allTrials = jsPsych.randomization.shuffle(selected);
+
+  function getSignature(trial) {
+    return `${trial.correct_response}_${trial.congruency}_${trial.name}`;
   }
 
-  let ordered = [];
-  for (let i = 0; i < blackShuffled.length; i++) {
-    ordered = ordered.concat(gaps[i]);
-    ordered.push(blackShuffled[i]);
-  }
-  ordered = ordered.concat(gaps[blackShuffled.length]);
+  let ordered = [allTrials[0]];
 
-  for (let i = 0; i < ordered.length - 1; i++) {
-    // Rule 1: no consecutive red trials
-    if (ordered[i].name === 'red_stimulus' && ordered[i + 1].name === 'red_stimulus') {
-      console.warn('Consecutive red trials detected, regenerating...');
-      return createPracticeStimuli(stimulus, red_stimulus);
+  for (let i = 1; i < allTrials.length; i++) {
+    const current = allTrials[i];
+    const prev = ordered[ordered.length - 1];
+
+    if (
+      getSignature(current) === getSignature(prev) ||
+      (current.name === "red_stimulus" && prev.name === "red_stimulus")
+    ) {
+      // find a safe swap
+      let swapIndex = allTrials.findIndex(
+        (t, idx) =>
+          idx > i &&
+          getSignature(t) !== getSignature(prev) &&
+          !(t.name === "red_stimulus" && prev.name === "red_stimulus")
+      );
+      if (swapIndex !== -1) {
+        [allTrials[i], allTrials[swapIndex]] = [allTrials[swapIndex], allTrials[i]];
+      }
     }
 
-    if (JSON.stringify(ordered[i]) === JSON.stringify(ordered[i + 1])) {
-      console.warn('Duplicate consecutive trial detected, regenerating...');
-      return createPracticeStimuli(stimulus, red_stimulus);
-    }
+    ordered.push(allTrials[i]);
   }
 
-  return ordered;
+  return ordered.slice(0, n_total);
 }
-
 const practicestimuli = createPracticeStimuli(stimulus, red_stimulus);
 
 const practice_block = {
