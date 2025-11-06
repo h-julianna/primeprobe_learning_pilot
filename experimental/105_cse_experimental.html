@@ -432,14 +432,16 @@ console.log("Loaded randomized blocks:", randomized_stimuli.length);
 
 
 
-//PRACTICE: red trials can only be followed by black trials, no repeating trials, 4-16
+//PRACTICE: red trials can only be followed by black trials, no repeating trials, 4-16, 50-50
 function createPracticeStimuli(stimulus, red_stimulus) {
   const n_total = 16;
-  const n_red = Math.round(n_total * 0.25); // 4 red
-  const n_black = n_total - n_red;          // 12 black
+  const n_red = 4;
+  const n_black = 12;
 
-  const n_congruent = n_total / 2;          // 8
-  const n_incongruent = n_total / 2;        // 8
+  const n_red_congruent = 2;
+  const n_red_incongruent = 2;
+  const n_black_congruent = 6;
+  const n_black_incongruent = 6;
 
   // Split by congruency
   const blackCongruent = stimulus.filter(s => s.congruency === "congruent");
@@ -447,13 +449,7 @@ function createPracticeStimuli(stimulus, red_stimulus) {
   const redCongruent = red_stimulus.filter(s => s.congruency === "congruent");
   const redIncongruent = red_stimulus.filter(s => s.congruency === "incongruent");
 
-  // how many congruent/incongruent trials should be red vs black
-  const n_red_congruent = Math.floor(n_red / 2);
-  const n_red_incongruent = n_red - n_red_congruent;
-  const n_black_congruent = n_congruent - n_red_congruent;
-  const n_black_incongruent = n_incongruent - n_red_incongruent;
-
-  // sample with replacement if limited
+  // sample (with replacement if needed)
   const selected = [
     ...jsPsych.randomization.sampleWithReplacement(blackCongruent, n_black_congruent),
     ...jsPsych.randomization.sampleWithReplacement(blackIncongruent, n_black_incongruent),
@@ -477,7 +473,7 @@ function createPracticeStimuli(stimulus, red_stimulus) {
       getSignature(current) === getSignature(prev) ||
       (current.name === "red_stimulus" && prev.name === "red_stimulus")
     ) {
-      // find a safe swap
+      // find a safe trial to swap in
       let swapIndex = allTrials.findIndex(
         (t, idx) =>
           idx > i &&
