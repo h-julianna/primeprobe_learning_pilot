@@ -221,6 +221,7 @@ const prime_duration = 133;
 const blank_duration = 33;
 const probe_stim_duration = 133;
 const debug = 0;
+
  //defining the trials
     const stimulus = [
      {
@@ -431,60 +432,58 @@ console.log("Loaded randomized blocks:", randomized_stimuli.length);
 
 
 
-//PRACTICE: red trials can only be followed by black trials
-function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);  //reorders items (-0.5-0.5 neg or pos decides sort order)
+//PRACTICE: red trials can only be followed by black trials, no repeating trials, 4-16
+function createPracticeStimuli(stimulus, red_stimulus) {
+  const n_total = 16;
+  const n_red = Math.round(n_total * 0.25); 
+  const n_black = n_total - n_red;
+
+
+  const blackSubset = jsPsych.randomization.sampleWithoutReplacement(stimulus, n_black);
+  const redSubset = jsPsych.randomization.sampleWithoutReplacement(red_stimulus, n_red);
+
+  const blackShuffled = jsPsych.randomization.shuffle(blackSubset);
+  const redShuffled = jsPsych.randomization.shuffle(redSubset);
+
+  const gaps = Array.from({ length: blackShuffled.length + 1 }, () => []);
+  const gapIndices = jsPsych.randomization.shuffle([...Array(gaps.length).keys()]);
+
+  for (let i = 0; i < redShuffled.length; i++) {
+    gaps[gapIndices[i]].push(redShuffled[i]);
+  }
+
+  let ordered = [];
+  for (let i = 0; i < blackShuffled.length; i++) {
+    ordered = ordered.concat(gaps[i]);
+    ordered.push(blackShuffled[i]);
+  }
+  ordered = ordered.concat(gaps[blackShuffled.length]);
+
+  for (let i = 0; i < ordered.length - 1; i++) {
+    // Rule 1: no consecutive red trials
+    if (ordered[i].name === 'red_stimulus' && ordered[i + 1].name === 'red_stimulus') {
+      console.warn('Consecutive red trials detected, regenerating...');
+      return createPracticeStimuli(stimulus, red_stimulus);
+    }
+
+    if (JSON.stringify(ordered[i]) === JSON.stringify(ordered[i + 1])) {
+      console.warn('Duplicate consecutive trial detected, regenerating...');
+      return createPracticeStimuli(stimulus, red_stimulus);
+    }
+  }
+
+  return ordered;
 }
 
-//creates the practice sequence with proportions
-function create_practice_sequence(stimulus, red_stimulus, total_practice_trials = 40) { //not sure abt number of totaltrials
-    const n_redpracticetrials = Math.floor(total_practice_trials * 0.25); //sets the proportion so 0.25 of trials are red (not sure abt number again lol)
-    const n_neutralpracticetrials = total_practice_trials - n_redpracticetrials; //-II-
-
-//pick random trials
-let neutralpracticetrials = [];
-    while (neutralpracticetrials.length < n_neutralpracticetrials) { //randomly selects n number of neutral trials
-        neutralpracticetrials = neutralpracticetrials.concat(shuffle(stimulus)); //adds them to neutral trials array
-    }
-    neutralpracticetrials = neutralpracticetrials.slice(0, n_neutralpracticetrials); //array is the right length
-
-    let redpracticetrials = []; //same thing
-    while (redpracticetrials.length < n_redpracticetrials) {
-        redpracticetrials = redpracticetrials.concat(shuffle(red_stimulus));
-    }
-    redpracticetrials = redpracticetrials.slice(0, n_redpracticetrials);
-
-
-    let practicesequence = []; //sequence: final ordered array of trials
-    while (neutralpracticetrials.length > 0 || redpracticetrials.length > 0) { //loop until both trials empty
-        if (practicesequence.length === 0 || practicesequence[practicesequence.length - 1].name === "red_stimulus") { //if its the first trial or last trial was red, cant place another red
-            if (neutralpracticetrials.length > 0) {
-                practicesequence.push(neutralpracticetrials.shift()); //removes first neutral trial and adds it to sequence
-            } else if (redpracticetrials.length > 0) { //if we ran out of neutrals we gotta add a red
-                practicesequence.push(redpracticetrials.shift());
-            }
-        } else {
-            //last was neutral, can place either
-            if (redpracticetrials.length > 0 && Math.random() < 0.25) { //keeping the proportions
-                practicesequence.push(redpracticetrials.shift());
-            } else if (neutralpracticetrials.length > 0) { //otherwise a neutral trial is placed
-                practicesequence.push(neutralpracticetrials.shift());
-            } else if (redpracticetrials.length > 0) { //in case we ran out of neutrals
-                practicesequence.push(redpracticetrials.shift());
-            }
-        }
-    }
-
-    return practicesequence; //returns ordered array of trials
-}
-
-const practicestimuli = create_practice_sequence(stimulus, red_stimulus, 40); //has the stimuli with no cons. reds and proportionate
+const practicestimuli = createPracticeStimuli(stimulus, red_stimulus);
 
 const practice_block = {
     timeline: [fixation, prime_trial, blank, probe_trial],
-    timeline_variables: practicestimuli
-/*, (kikommenteltem h ne fusson örökké ikszdé)
-    loop_function: function(data) {
+    timeline_variables: practicestimuli,
+    randomize_order: false,
+    repetitions: 1,
+    //(kikommenteltem h ne fusson örökké ikszdé)//
+  /*  loop_function: function(data) {
 	if(debug == 0){
         console.log(data);
         var correct_trials = data.filter({task: "probe",correct: true}).count();
@@ -595,7 +594,7 @@ const experiment_end = {
 }
 
 
-timeline.push(full_experiment, data_handling, informed_consent, demographic_timeline, instructions, all_practice, experiment_end);
+timeline.push(all_practice, full_experiment, data_handling, informed_consent, demographic_timeline, instructions, all_practice, experiment_end);
 jsPsych.run(timeline) 
     </script>
 </html>
