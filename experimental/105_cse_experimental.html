@@ -72,8 +72,6 @@ const welcome = {
                 <p>A kutatásban való részvétel teljesen önkéntes. A vizsgálatot bármikor indoklás nélkül megszakíthatod. Ha bármilyen kérdésed, észrevételed vagy problémád van a kutatással kapcsolatban, írj Bognár Miklósnak a <a href="mailto:bognar.miklos@ppk.elte.hu">bognar.miklos@ppk.elte.hu</a> címre.</p>`,
             choices: ['Tovább']
         };       
-        
-
 //data handling and informed consent
 const data_handling = {   
 type: jsPsychHtmlButtonResponse,
@@ -154,63 +152,31 @@ const gender = {
 const demographic_timeline = [age_neptun, gender]
     console.log(demographic_timeline)
 
+// ready-to-go stimuli converted from the a randomized JSON
+const randomized_stimuli = prime_probe_trials.trials.map((block, block_index) => {
+  const formatted_block = block.map(trial => {
+    // reformatting the stimuli into HTML structures
+    const primeHTML = `<span style="font-size: 35px;">${trial.prime.replace(/\n/g, "<br>")}</span>`;
+    const probeHTML = `<span style="font-size: 35px; ${trial.color === 'red' ? 'color: #e60602;' : ''}">${trial.probe}</span>`;
 
+    return {
+      prime: primeHTML,
+      probe: probeHTML,
+      congruency: trial.congruency,
+      correct_response: trial.correct_response,
+      name: trial.name,
+      block: block_index + 1  // label each trial with its block number
+    };
+  });
+  return formatted_block; // flatten in case of nested arrays
+});
 
-//instructions//
-const instructions = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<h2>Instrukciók</h2>
-                <p>Ebben a kísérletben arra vagyunk kíváncsiak, hogy miként befolyásolja a büntetés a konfliktusfeldolgozást. 
-                A kísérlet során iránymegjelöléseket fogsz olvasni (FEL, LE, JOBB, BAL). Először egy prime inger fog megjelenni a képernyőn, amin egy irány (pl.: „FEL”) lesz olvasható egymás alatt háromszor. 
-                Ezt követően megjelenik a célinger, ami vagy azonos („FEL”) vagy ellentétes („LE”) lesz az előtte bemutatott iránnyal.
-                A feladatod az lesz, hogy minél gyorsabban és pontosabban eltaláld a célinger irányát a hozzárendelt billentyű megnyomásával.</p> 
-                <p>Kérlek helyezd a billentyűzetre a kezedet a képen látható módon:</p>
-                <p>A bal középső ujjadat tedd az „a”-ra, ez lesz  a "BAL" irány. A mutató ujjadat a „d”-re, ez fogja jelölni a "JOBB" irányt.
-                    A jobb mutató ujjadat helyezd az „n”-re, ez lesz a "LE" irány. Míg a jobb középső ujjadat pedig tedd az „i”-re, ami a "FEL" irányt fogja jelölni!</p>
-                <img src="Experimental material/instruction_pic.png" alt="Hand placemante instructions" style="width: 40%; height: 40%;">
-                <p style="text-align: center;"><em>Amennyiben készen állsz a kísérlet megkezdésére, nyomd meg a space billentyűt!</em></p>`,
-            choices: [" "],
-        };
+console.log("Loaded randomized blocks:", randomized_stimuli.length);
 
-const practice_instructions = {
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: `<h2>Gyakorló blokk</h2>
-            <p>A kísérlet megkezdése előtt egy rövid gyakorló blokk következik. Ebben a blokkban nem vonunk le garast a hibás válaszokért, azonban törekedj a minél gyorsabb és pontosabb válaszadásra! 
-            Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`
-}
-
-const practice_intermission = {
-  type: jsPsychHtmlKeyboardResponse,
-  stimulus: function() {
-    // initial display with timer placeholder
-    return `<div style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">
-      <p>Még egy rövid gyakorló blokk következik.<br>
-      Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>
-      <p><strong>A blokk automatikusan elindul 2 perc múlva.</strong></p>
-      <p id="timer" style="font-size: 28px; color: darkred;">Kezdés: 2:00</p>
-    </div>`;
-  },
-  choices: "ALL_KEYS",
-  trial_duration: 120000, // 2 minutes
-  on_load: function() {
-    let timeLeft = 120; // seconds
-    const timerDisplay = document.getElementById('timer');
-    const countdown = setInterval(() => {
-      timeLeft--;
-      const minutes = Math.floor(timeLeft / 60);
-      const seconds = timeLeft % 60;
-      timerDisplay.textContent = `Kezdés: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-      if (timeLeft <= 0) clearInterval(countdown);
-    }, 1000);
-  }
-};
-
-const practice_end = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">A gyakorló rész véget ért, a kísérleti blokkok következnek.
-        Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`,
-    choices: "ALL_KEYS",
-}
+const shuffled_blocks = jsPsych.randomization.shuffle(randomized_stimuli);
+const selected_blocks = shuffled_blocks.slice(0, 10);
+console.log("Selected 10 randomized blocks:", selected_blocks.length);
+const randomized_stimuli_per_participant = selected_blocks;
 
 //trial parameters
 const queryString = window.location.search;
@@ -408,30 +374,63 @@ const debug = 0;
     }
 };
 
-// ready-to-go stimuli converted from the a randomized JSON
-const randomized_stimuli = prime_probe_trials.trials.map((block, block_index) => {
-  const formatted_block = block.map(trial => {
-    // reformatting the stimuli into HTML structures
-    const primeHTML = `<span style="font-size: 35px;">${trial.prime.replace(/\n/g, "<br>")}</span>`;
-    const probeHTML = `<span style="font-size: 35px; ${trial.color === 'red' ? 'color: #e60602;' : ''}">${trial.probe}</span>`;
-
-    return {
-      prime: primeHTML,
-      probe: probeHTML,
-      congruency: trial.congruency,
-      correct_response: trial.correct_response,
-      name: trial.name,
-      block: block_index + 1  // label each trial with its block number
-    };
-  });
-  return formatted_block; // flatten in case of nested arrays
-});
-
-console.log("Loaded randomized blocks:", randomized_stimuli.length);
-
-
-
 //PRACTICE: red trials can only be followed by black trials
+//instructions//
+const instructions = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `<h2>Instrukciók</h2>
+                <p>Ebben a kísérletben arra vagyunk kíváncsiak, hogy miként befolyásolja a büntetés a konfliktusfeldolgozást. 
+                A kísérlet során iránymegjelöléseket fogsz olvasni (FEL, LE, JOBB, BAL). Először egy prime inger fog megjelenni a képernyőn, amin egy irány (pl.: „FEL”) lesz olvasható egymás alatt háromszor. 
+                Ezt követően megjelenik a célinger, ami vagy azonos („FEL”) vagy ellentétes („LE”) lesz az előtte bemutatott iránnyal.
+                A feladatod az lesz, hogy minél gyorsabban és pontosabban eltaláld a célinger irányát a hozzárendelt billentyű megnyomásával.</p> 
+                <p>Kérlek helyezd a billentyűzetre a kezedet a képen látható módon:</p>
+                <p>A bal középső ujjadat tedd az „a”-ra, ez lesz  a "BAL" irány. A mutató ujjadat a „d”-re, ez fogja jelölni a "JOBB" irányt.
+                    A jobb mutató ujjadat helyezd az „n”-re, ez lesz a "LE" irány. Míg a jobb középső ujjadat pedig tedd az „i”-re, ami a "FEL" irányt fogja jelölni!</p>
+                <img src="Experimental material/instruction_pic.png" alt="Hand placemante instructions" style="width: 40%; height: 40%;">
+                <p style="text-align: center;"><em>Amennyiben készen állsz a kísérlet megkezdésére, nyomd meg a space billentyűt!</em></p>`,
+            choices: [" "],
+        };
+
+const practice_instructions = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `<h2>Gyakorló blokk</h2>
+            <p>A kísérlet megkezdése előtt egy rövid gyakorló blokk következik. Ebben a blokkban nem vonunk le garast a hibás válaszokért, azonban törekedj a minél gyorsabb és pontosabb válaszadásra! 
+            Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`
+}
+
+const practice_intermission = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: function() {
+    // initial display with timer placeholder
+    return `<div style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">
+      <p>Még egy rövid gyakorló blokk következik.<br>
+      Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>
+      <p><strong>A blokk automatikusan elindul 2 perc múlva.</strong></p>
+      <p id="timer" style="font-size: 28px; color: darkred;">Kezdés: 2:00</p>
+    </div>`;
+  },
+  choices: "ALL_KEYS",
+  trial_duration: 120000, // 2 minutes
+  on_load: function() {
+    let timeLeft = 120; // seconds
+    const timerDisplay = document.getElementById('timer');
+    const countdown = setInterval(() => {
+      timeLeft--;
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerDisplay.textContent = `Kezdés: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      if (timeLeft <= 0) clearInterval(countdown);
+    }, 1000);
+  }
+};
+
+const practice_end = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `<p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">A gyakorló rész véget ért, a kísérleti blokkok következnek.
+        Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`,
+    choices: "ALL_KEYS",
+}
+
 function shuffle(array) {
     return array.sort(() => Math.random() - 0.5);  //reorders items (-0.5-0.5 neg or pos decides sort order)
 }
@@ -508,51 +507,48 @@ const practice_block = {
 };
 const all_practice = {
     timeline: [practice_instructions, practice_block, practice_intermission, practice_block, practice_end]
-  }   
-//Trial sequence//
-const trial_sequence = {
-  timeline: [fixation, prime_trial, blank, probe_trial],
-  timeline_variables: randomized_stimuli.flat(),//flattened array of all blocks
-  randomize_order: false
-  
-};
+  }  
 
-
-/*function shuffle_all_sessions() {  //lowkey not sure if we'll need this
-        const experimental_array =  [block_neutral, block_red];
-        const shuffledArray = experimental_array.sort((a, b) => 0.5 - Math.random());
-        console.log(shuffledArray);
-        return shuffledArray;
-        }
-*/
-//Define the main experimental trial structure
-const experimental_blocks = randomized_stimuli.map((block_stimuli, i) => {
-  return {
-    timeline: [fixation, prime_trial, blank, probe_trial],
-    timeline_variables: block_stimuli,
-    randomize_order: false,  // already randomized externally
+//experimental blocks
+const experimental_blocks = randomized_stimuli_per_participant.map((block_stimuli, i) => {
+    return {
+    timeline: [
+      {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `
+          <div style="text-align:center; font-size:24px;">
+            <h2>Blokk ${i + 1} kezdődik</h2>
+          </div>`,
+        choices: "NO_KEYS",
+        trial_duration: 2000 //show for 2 seconds, then start automatically
+      },
+      {
+        timeline: [fixation, prime_trial, blank, probe_trial],
+        timeline_variables: block_stimuli,
+        randomize_order: false
+      }
+    ],
     on_timeline_start: () => {
       console.log(`Starting Block ${i + 1}`);
     }
   };
 });
-
-//block intermission
+//intermission between blocks
 const block_intermission = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: function() {
-    // initial display with timer placeholder
-    return `<div style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">
-      <p>Még egy rövid gyakorló blokk következik.<br>
-      Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>
-      <p><strong>A blokk automatikusan elindul 2 perc múlva.</strong></p>
-      <p id="timer" style="font-size: 28px; color: darkred;">Kezdés: 2:00</p>
-    </div>`;
+    return `
+      <div style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">
+        <p><strong>Blokk vége.</strong></p>
+        <p>Pihenj egy kicsit, majd nyomj meg egy billentyűt a következő blokk kezdéséhez.</p>
+        <p><strong>A következő blokk automatikusan elindul 2 perc múlva.</strong></p>
+        <p id="timer" style="font-size: 28px; color: darkred;">Kezdés: 2:00</p>
+      </div>`;
   },
   choices: "ALL_KEYS",
-  trial_duration: 120000, // 2 minutes
+  trial_duration: 120000,
   on_load: function() {
-    let timeLeft = 120; // seconds
+    let timeLeft = 120;
     const timerDisplay = document.getElementById('timer');
     const countdown = setInterval(() => {
       timeLeft--;
@@ -561,14 +557,14 @@ const block_intermission = {
       timerDisplay.textContent = `Kezdés: ${minutes}:${seconds.toString().padStart(2, '0')}`;
       if (timeLeft <= 0) clearInterval(countdown);
     }, 1000);
-  }
+  },
+  data: { task: 'intermission' }
 };
 
-//Build full experimental timeline
-const full_experiment = [
-  experimental_blocks
-];
-//add each block and a break (except after the last block)
+//full experiment timeline
+const full_experiment = [];
+
+//add each block followed by an intermission (except after the last one)
 experimental_blocks.forEach((block, index) => {
   full_experiment.push(block);
   if (index < experimental_blocks.length - 1) {
@@ -576,26 +572,21 @@ experimental_blocks.forEach((block, index) => {
   }
 });
 
-
-/* 
-If you later want to end the study automatically via JATOS:
-/*({
-	on_finish: () => jatos.endStudy(jsPsych.data.get().json())
-})
-*/
-//end of experiment
+//end screen
 const experiment_end = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus:
-         function() { `<h2>Kísérlet vége</h2>
-        <p>Köszönjük, hogy részt vettél a vizsgálatban!<br>A kísérlet részvételért járó pont az álábbi linken érhető el:</p>`
-        return `<h2>Kísérlet vége</h2> <p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px"> Köszönjük, hogy részt vettél a vizsgálatban!</p>`
-    },
-    choices: "ALL_KEYS"
-}
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: `
+    <div style="text-align:center; font-size:24px; max-width:800px; margin:auto;">
+      <h2>Kísérlet vége</h2>
+      <p>Köszönjük, hogy részt vettél a vizsgálatban!</p>
+      <p>A részvételért járó pont az alábbi linken érhető el:</p>
+      <p><a href="https://forms.gle/AKSpNSLcB9VzeLEDA" target="_blank">https://forms.gle/AKSpNSLcB9VzeLEDA</a></p>
+      <p>Nyomj meg egy billentyűt a befejezéshez.</p>
+    </div>`,
+  choices: "ALL_KEYS"
+};
 
-
-timeline.push(full_experiment, data_handling, informed_consent, demographic_timeline, instructions, all_practice, experiment_end);
+timeline.push(welcome, data_handling, informed_consent, demographic_timeline, instructions, all_practice, full_experiment, experiment_end);
 jsPsych.run(timeline) 
     </script>
 </html>
