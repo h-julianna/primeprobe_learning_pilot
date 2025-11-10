@@ -38,9 +38,9 @@
       })
     
       /*data handling and informed consent*/
-// debug mode
+//debug mode
   // Get URL query parameters
-/*var debug = true; // set to false for normal timings
+var debug = false; // set to false for normal timings
 console.log("Debug mode:", debug);
 
 const durations = {
@@ -50,7 +50,6 @@ const durations = {
     probe_stim_duration: debug ? 1 : 133
 };
 console.log("Durations:", durations);
-*/
       // initialize jsPsych
     const jsPsych = initJsPsych()
     const timeline = [];
@@ -228,7 +227,7 @@ const probe_stim_duration = 133;
 //const debug = 0;
  //defining the trials
     const stimulus = [
-     {
+     {  
         prime: '<span style="font-size: 35px;">le<br>le<br>le</span>',
         probe: '<span style="font-size: 35px;">fel</span>',
         congruency: 'incongruent',
@@ -355,39 +354,35 @@ const probe_stim_duration = 133;
     stimulus: '<div style="font-size:60px;">+</div>',
     choices: "NO_KEYS",
     trial_duration: Math.random() * (600 - 400) + 400,
-    /*trial_duration: function() {
-        if (debug == 1){
-            return 1;
-        }else{
-            return Math.random() * (600 - 400) + 400;
-        }
-    },*/
-    data: {
-        task: 'fixation'
-    }
-}
+    trial_duration: debug
+        ? 1
+        : Math.random() * (600 - 400) + 400,
+        data : { task : 'fixation'}
+   }
 //prime//
    const prime_trial = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: jsPsych.timelineVariable('prime'),
     choices: "NO_KEYS",
 	trial_duration: prime_duration,
-   function(){return prime_duration},
-    data:{
-        task:"prime"
-    }
-}
+  trial_duration: debug
+        ? 1
+        : Math.random() * (600 - 400) + 400,
+        data : { task : 'prime'}
+   }
+
 //blank//
    const blank = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: ' ',
     choices: "NO_KEYS",
 	trial_duration: blank_duration,
-   function(){return blank_duration},
-    data:{
-        task:"blank"
-    }
-}
+  trial_duration: debug
+        ? 1
+        : Math.random() * (600 - 400) + 400,
+        data : { task : 'blank'}
+   }
+
 //probe//
     const probe_trial = {
     type: jsPsychHtmlKeyboardResponse,
@@ -397,7 +392,11 @@ const probe_stim_duration = 133;
         console.log("stimdur:", probe_stim_duration);
         return probe_stim_duration; 
     },
-    trial_duration: probe_duration, 
+    trial_duration: probe_duration,
+    trial_duration: debug
+        ? 1
+        : Math.random() * (600 - 400) + 400,
+        data : { task : 'fixation'},
     response_ends_trial: false,   
     data: {
         correct_response: jsPsych.timelineVariable('correct_response'),
@@ -495,13 +494,19 @@ for (let i = 1; i < allTrials.length; i++) {
 
   let attempts = 0;
   while (
+  (
+    getSignature(current) === getSignature(prev) ||                 
+    (current.name === "red_stimulus" && prev.name === "red_stimulus") || 
+    (getAxis(current) === getAxis(prev)) ||
     (
-      getSignature(current) === getSignature(prev) ||                 // same full identity
-      (current.name === "red_stimulus" && prev.name === "red_stimulus") || // two reds in a row
-      (getAxis(current) === getAxis(prev))                            // same axis (horizontal/vertical)
-    ) &&
-    attempts < allTrials.length
-  ) {
+      (current.correct_response === "a" && prev.correct_response === "a") ||
+      (current.correct_response === "d" && prev.correct_response === "d") ||
+      (current.correct_response === "i" && prev.correct_response === "i") ||
+      (current.correct_response === "n" && prev.correct_response === "n")
+    )
+  ) &&
+  attempts < allTrials.length
+){
     // find a safe trial to swap in
     let swapIndex = allTrials.findIndex(
       (t, idx) =>
