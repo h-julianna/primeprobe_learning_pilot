@@ -461,28 +461,40 @@ function createPracticeStimuli(stimulus, red_stimulus) {
 
   let ordered = [allTrials[0]];
 
-  for (let i = 1; i < allTrials.length; i++) {
-    const current = allTrials[i];
-    const prev = ordered[ordered.length - 1];
+for (let i = 1; i < allTrials.length; i++) {
+  let current = allTrials[i];
+  let prev = ordered[ordered.length - 1];
 
-    if (
-      getSignature(current) === getSignature(prev) ||
-      (current.name === "red_stimulus" && prev.name === "red_stimulus")
-    ) {
-      // find a safe trial to swap in
-      let swapIndex = allTrials.findIndex(
-        (t, idx) =>
-          idx > i &&
-          getSignature(t) !== getSignature(prev) &&
-          !(t.name === "red_stimulus" && prev.name === "red_stimulus")
-      );
-      if (swapIndex !== -1) {
-        [allTrials[i], allTrials[swapIndex]] = [allTrials[swapIndex], allTrials[i]];
-      }
-    }
-
-    ordered.push(allTrials[i]);
+  function getAxis(trial) {
+    return ["a", "d"].includes(trial.correct_response) ? "horizontal" : "vertical";
   }
+
+  let attempts = 0;
+  while (
+    (
+      getSignature(current) === getSignature(prev) ||                 // same full identity
+      (current.name === "red_stimulus" && prev.name === "red_stimulus") || // two reds in a row
+      (getAxis(current) === getAxis(prev))                            // same axis (horizontal/vertical)
+    ) &&
+    attempts < allTrials.length
+  ) {
+    // find a safe trial to swap in
+    let swapIndex = allTrials.findIndex(
+      (t, idx) =>
+        idx > i &&
+        getSignature(t) !== getSignature(prev) &&
+        !(t.name === "red_stimulus" && prev.name === "red_stimulus") &&
+        getAxis(t) !== getAxis(prev)                                  // only swap with opposite axis
+    );
+
+    if (swapIndex === -1) break;
+    [allTrials[i], allTrials[swapIndex]] = [allTrials[swapIndex], allTrials[i]];
+    current = allTrials[i];
+    attempts++;
+  }
+
+  ordered.push(current);
+}
 
   return ordered.slice(0, n_total);
 }
