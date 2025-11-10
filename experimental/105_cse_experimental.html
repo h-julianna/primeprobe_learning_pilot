@@ -14,7 +14,7 @@
         <link href='styles.css' rel='stylesheet' type='text/css' />
         <!-- <script src="jatos.js"></script> -->
     </head>
-    <body></body>
+  <body>
     <script>
        /*const jsPsych = initJsPsych({
 	      on_trial_start: function() {
@@ -38,7 +38,20 @@
       })
     
       /*data handling and informed consent*/
-// initialize jsPsych
+// debug mode
+  // Get URL query parameters
+/*var debug = true; // set to false for normal timings
+console.log("Debug mode:", debug);
+
+const durations = {
+    probe_duration: debug ? 1 : 1000,
+    prime_duration: debug ? 1 : 133,
+    blank_duration: debug ? 1 : 33,
+    probe_stim_duration: debug ? 1 : 133
+};
+console.log("Durations:", durations);
+*/
+      // initialize jsPsych
     const jsPsych = initJsPsych()
     const timeline = [];
 //creating and storing subject codes
@@ -60,7 +73,7 @@ jsPsych.data.addProperties({subj_code: subj_code}); //adding the subject code to
 const welcome = {
             type: jsPsychHtmlButtonResponse,
             stimulus: `
-            <img src="Experimental material/University_logo.png" alt=University Logo" style="width: 300px; display: block; margin: auto;">
+            <img src="Experimental material/University_logo.png" alt="University Logo" style="width: 300px; display: block; margin: auto;">
             <h2>Üdvözlünk a Metatudomány kutatócsoport vizsgálatában!</h2>
                 <p>Egy tudományos kutatásban veszel részt, amelynek vezetője Bognár Miklós, az ELTE Affektív Pszichológia Tanszékének kutatója. 
                 A kutatás célja megvizsgálni, hogy miként hatnak a büntetés által kiváltott negatív motivációs állapotok a kognitív kontrollra.</p>
@@ -170,27 +183,38 @@ const instructions = {
 // ready-to-go stimuli converted from the a randomized JSON
 const randomized_stimuli = prime_probe_trials.trials.map((block, block_index) => {
   const formatted_block = block.map(trial => {
-    // reformatting the stimuli into HTML structures
     const primeHTML = `<span style="font-size: 35px;">${trial.prime.replace(/\n/g, "<br>")}</span>`;
-    const probeHTML = `<span style="font-size: 35px; ${trial.color === 'red' ? 'color: #e60602;' : ''}">${trial.probe}</span>`;
+    let probeColorStyle = "";
+    if (trial.color === "red") {
+      probeColorStyle = "color: #e60602;"; // red
+    } else if (trial.color === "black") {
+      probeColorStyle = "color: #000000;"; // black
+    }
 
+    const probeHTML = `<span style="font-size: 35px; ${probeColorStyle}">${trial.probe}</span>`;
+//dynamic, useful when we'll want to add more colors
     return {
       prime: primeHTML,
       probe: probeHTML,
       congruency: trial.congruency,
       correct_response: trial.correct_response,
-      name: trial.name,
-      block: block_index + 1  // label each trial with its block number
+      color: trial.color,
+      name: trial.name, 
+      block: block_index + 1 // label each trial with its block number
     };
   });
-  return formatted_block; // flatten in case of nested arrays
+
+  return formatted_block;
 });
 
 console.log("Loaded randomized blocks:", randomized_stimuli.length);
 
+// Shuffle and select blocks for the participant
 const shuffled_blocks = jsPsych.randomization.shuffle(randomized_stimuli);
 const selected_blocks = shuffled_blocks.slice(0, 10);
+
 console.log("Selected 10 randomized blocks:", selected_blocks.length);
+
 const randomized_stimuli_per_participant = selected_blocks;
 
 //trial parameters
@@ -201,7 +225,7 @@ const probe_duration = 1000;
 const prime_duration = 133;
 const blank_duration = 33;
 const probe_stim_duration = 133;
-const debug = 0;
+//const debug = 0;
  //defining the trials
     const stimulus = [
      {
@@ -521,7 +545,7 @@ const all_practice = {
 
 //experimental blocks
 const experimental_blocks = randomized_stimuli_per_participant.map((block_stimuli, i) => {
-    return {
+  return {
     timeline: [
       {
         type: jsPsychHtmlKeyboardResponse,
@@ -530,7 +554,7 @@ const experimental_blocks = randomized_stimuli_per_participant.map((block_stimul
             <h2>Blokk ${i + 1} kezdődik</h2>
           </div>`,
         choices: "NO_KEYS",
-        trial_duration: 2000 //show for 2 seconds, then start automatically
+        trial_duration: 2000
       },
       {
         timeline: [fixation, prime_trial, blank, probe_trial],
@@ -538,23 +562,53 @@ const experimental_blocks = randomized_stimuli_per_participant.map((block_stimul
         randomize_order: false
       }
     ],
+
     on_timeline_start: () => {
       console.log(`Starting Block ${i + 1}`);
     },
-    on_timeline_finish: function() {  //check for consecutive red trials
-      const block_data = jsPsych.data.get().last(block_stimuli.length);
-      const trials = block_data.values();
 
-      for (let t = 1; t < trials.length; t++) {
-        if (trials[t - 1].color === "red" && trials[t].color === "red") {
+    on_timeline_finish: function() {
+      const block_data = jsPsych.data.get().last(block_stimuli.length).values();
+
+      for (let t = 1; t < block_data.length; t++) {
+        const prev = block_data[t - 1];
+        const curr = block_data[t];
+
+        //extracting name and color
+        const prevName = prev.name || "";
+        const currName = curr.name || "";
+        const prevColor = prev.color || "";
+        const currColor = curr.color || "";
+
+        // consecutive red trials check
+        if (prevColor === "red" && currColor === "red") {
           console.error(
-            `Two consecutive red trials detected in block ${i + 1} (trials ${t} and ${t + 1}).`
+            `Two consecutive red trials detected in block ${i + 1} (trials ${t} & ${t + 1}): ${prevName} -> ${currName}`
           );
-          jsPsych.endExperiment(); // stop experiment
-          break; // stop checking further
+          jsPsych.endExperiment("Experiment stopped: consecutive red trials detected.");
+          return;
         }
-      }}}
+
+        //directional orientation alternation check
+        const prevIsVertical = prevName.includes("vertical");
+        const currIsVertical = currName.includes("vertical");
+        const prevIsHorizontal = prevName.includes("horizontal");
+        const currIsHorizontal = currName.includes("horizontal");
+
+        if ((prevIsVertical && currIsVertical) || (prevIsHorizontal && currIsHorizontal)) {
+          console.error(
+            `Orientation alternation broken in block ${i + 1} (trials ${t} & ${t + 1}): ${prevName} -> ${currName}`
+          );
+          jsPsych.endExperiment("Experiment stopped: two consecutive trials share the same orientation.");
+          return;
+        }
+      }
+
+      console.log(`Block ${i + 1} passed red–red and H–V alternation checks.`);
+    }
+  };
 });
+
 //intermission between blocks
 const block_intermission = {
   type: jsPsychHtmlKeyboardResponse,
@@ -595,7 +649,7 @@ experimental_blocks.forEach((block, index) => {
 
 //end screen
 const experiment_end = {
-  type: jsPsychHtmlKeyboardResponse,
+  type: jsPsychHtmlButtonResponse,
   stimulus: `
    <div style="text-align:center; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:24px; max-width:800px;">
       <h2>Kísérlet vége</h2>
@@ -605,10 +659,11 @@ const experiment_end = {
       <p><a href="https://forms.gle/AKSpNSLcB9VzeLEDA" target="_blank">https://forms.gle/AKSpNSLcB9VzeLEDA</a></p>
       <p>Nyomj meg egy billentyűt a befejezéshez.</p>
     </div>`,
-  choices: "ALL_KEYS",
+  choices: "Vége",
 };
 
 timeline.push(welcome, fullscreen, informed_consent, data_handling, demographic_timeline, instructions,all_practice, full_experiment,experiment_end,);
 jsPsych.run(timeline) 
     </script>
+  </body>
 </html>
