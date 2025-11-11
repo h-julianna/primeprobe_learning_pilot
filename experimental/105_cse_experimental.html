@@ -40,7 +40,7 @@
       /*data handling and informed consent*/
 //debug mode
   // Get URL query parameters
-var debug = false; // set to false for normal timings
+var debug = true; // set to false for normal timings
 console.log("Debug mode:", debug);
 
 const durations = {
@@ -350,7 +350,6 @@ const probe_stim_duration = 133;
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<div style="font-size:60px;">+</div>',
     choices: "NO_KEYS",
-    trial_duration: Math.random() * (600 - 400) + 400,
     trial_duration: debug
         ? 1
         : Math.random() * (600 - 400) + 400,
@@ -361,39 +360,33 @@ const probe_stim_duration = 133;
     type: jsPsychHtmlKeyboardResponse,
     stimulus: jsPsych.timelineVariable('prime'),
     choices: "NO_KEYS",
-	trial_duration: prime_duration,
-  trial_duration: debug
-        ? 1
-        : Math.random() * (600 - 400) + 400,
-        data : { task : 'prime'}
-   }
-
+	trial_duration: durations.prime_duration,
+   function(){return durations.prime_duration},
+    data:{
+        task:"prime"
+    }
+}
 //blank//
    const blank = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: ' ',
     choices: "NO_KEYS",
-	trial_duration: blank_duration,
-  trial_duration: debug
-        ? 1
-        : Math.random() * (600 - 400) + 400,
-        data : { task : 'blank'}
-   }
-
+	trial_duration: durations.blank_duration,
+   function(){return durations.blank_duration},
+    data:{
+        task:"blank"
+    }
+}
 //probe//
     const probe_trial = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: jsPsych.timelineVariable('probe'),
     choices: ["a", "i", "d", "n"],
     stimulus_duration: function() {
-        console.log("stimdur:", probe_stim_duration);
-        return probe_stim_duration; 
+        console.log("stimdur:", durations.probe_stim_duration);
+        return durations.probe_stim_duration; 
     },
-    trial_duration: probe_duration,
-    trial_duration: debug
-        ? 1
-        : Math.random() * (600 - 400) + 400,
-        data : { task : 'fixation'},
+    trial_duration: durations.probe_duration, 
     response_ends_trial: false,   
     data: {
         correct_response: jsPsych.timelineVariable('correct_response'),
