@@ -10,33 +10,43 @@
         <script src='jspsych/dist/plugin-html-slider-response.js'></script>
         <script src='jspsych/dist/plugin-survey-text.js'></script>
         <script src='jspsych/dist/plugin-survey-multi-choice.js'></script>
+        <script src='jspsych/dist/plugin-call-function.js'></script>
         <link href='jspsych/dist/jspsych.css' rel='stylesheet' type='text/css' />
         <link href='styles.css' rel='stylesheet' type='text/css' />
-        <!-- <script src="jatos.js"></script> -->
+        <script src="jatos.js"></script>
+
     </head>
   <body>
     <script>
-       /*const jsPsych = initJsPsych({
-	      on_trial_start: function() {
-		    console.log(jatos.version)
-	      console.log(jatos.urlQueryParameters.petyko)
+      const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
 
-	      const jatosdebug = jatos.urlQueryParameters.debug
-	        console.log(jatosdebug)
+   /* jatos.onLoad(() => {
+    console.log(jatos.version)}); */
 
-	      if(jatosdebug == 1){
-		      probe_duration = 1;
-		      prime_duration = 1;
-		      feedback_duration = 1;
-		      blank_duration = 1;
-		      probe_stim_duration = 1;
-		      debug = 1;
-	      }
-	      console.log(probe_duration)
-	    },
-	    on_finish: () => jatos.endStudy(jsPsych.data.get().csv())
-      })
-    
+      const jsPsych = initJsPsych({
+      /*  on_trial_start: function() {
+        const params = jatos.urlQueryParameters || {};
+        const jatosdebug = params.debug;
+        console.log(jatosdebug)
+        if (jatosdebug == 1) {
+          probe_duration = 1;
+          prime_duration = 1;
+          feedback_duration = 1;
+          blank_duration = 1;
+          probe_stim_duration = 1;
+          debug = 1;
+      }
+
+      console.log(probe_duration);
+    },
+
+    on_finish: () => {
+      jatos.endStudyAndRedirect("https://forms.https://forms.gle/AKSpNSLcB9VzeLEDA/Wd5XzqnKsquPK7vr5", jsPsych.data.get().csv());
+    } */
+  });
+
+
       /*data handling and informed consent*/
 //debug mode
   // Get URL query parameters
@@ -51,7 +61,7 @@ const durations = {
 };
 console.log("Durations:", durations);
       // initialize jsPsych
-    const jsPsych = initJsPsych()
+    // const jsPsych = initJsPsych()
     const timeline = [];
 //creating and storing subject codes
 var subj_code; //a variable that later stores a random subject code
@@ -75,7 +85,7 @@ const welcome = {
             <img src="Experimental material/University_logo.png" alt="University Logo" style="width: 300px; display: block; margin: auto;">
             <h2>Üdvözlünk a Metatudomány kutatócsoport vizsgálatában!</h2>
                 <p>Egy tudományos kutatásban veszel részt, amelynek vezetője Bognár Miklós, az ELTE Affektív Pszichológia Tanszékének kutatója. 
-                A kutatás célja megvizsgálni, hogy miként hatnak a büntetés által kiváltott negatív motivációs állapotok a kognitív kontrollra.</p>
+                A kutatás célja megvizsgálni, hogy különböző ingertípusok miként hatnak a reakcióidőre.</p>
                 <h3>Részvétel</h3>
                 <p>A kutatásban való részvétel teljesen önkéntes. A vizsgálatot bármikor indoklás nélkül megszakíthatod. Ha bármilyen kérdésed, észrevételed vagy problémád van a kutatással kapcsolatban, írj Bognár Miklósnak a <a href="mailto:bognar.miklos@ppk.elte.hu">bognar.miklos@ppk.elte.hu</a> címre.</p>`,
             choices: ['Tovább']
@@ -103,7 +113,6 @@ const informed_consent = {
                     Hozzájárulok ahhoz, hogy a vizsgálat során a rólam felvett, személyem azonosítására nem alkalmas adatok más kutatók számára is hozzáférhetők legyenek.
                     Fenntartom a jogot arra, hogy a vizsgálat során annak folytatásától bármikor elállhassak. 
                     Ilyen esetben a rólam addig felvett adatokat törölni kell.</p>
-.
                 <p>Tudomásul veszem, hogy csak a teljesen befejezett kitöltésért kapok pontot a <em>Pszichológiai kísérletben és tudományos aktivitásban való részvétel</em> nevű kurzuson.</p>
 
                 <p><strong>A kutatásban való részvételem körülményeiről részletes tájékoztatást kaptam, a feltételekkel egyetértek. 
@@ -174,7 +183,6 @@ const instructions = {
                 <p>Kérlek helyezd a billentyűzetre a kezedet a képen látható módon:</p>
                 <p>A bal középső ujjadat tedd az „a”-ra, ez lesz  a "BAL" irány. A mutató ujjadat a „d”-re, ez fogja jelölni a "JOBB" irányt. 
                  A jobb mutató ujjadat helyezd az „n”-re, ez lesz a "LE" irány. Míg a jobb középső ujjadat pedig tedd az „i”-re, ami a "FEL" irányt fogja jelölni! </p>
-                <p> A kísérletet 2000 Ft-tal kezded. Amikor piros ingert látsz, a <strong>túl lassú vagy pontatlan</strong> válaszadásért mindig más értékű pénzlevonás fog járni. </p>
                 <img src="Experimental material/instruction_pic.png" alt="Hand placement instructions" style="width: 40%; height: 40%;">
                 <p style="text-align: center;"><em>Amennyiben készen állsz a kísérlet megkezdésére, nyomd meg a space billentyűt!</em></p>`,
             choices: [" "],
@@ -217,8 +225,8 @@ console.log("Selected 10 randomized blocks:", selected_blocks.length);
 const randomized_stimuli_per_participant = selected_blocks;
 
 //trial parameters
-const queryString = window.location.search;
-const urlParams = new URLSearchParams(queryString);
+/* const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString); */
         
 const probe_duration = 1000;
 const prime_duration = 133;
@@ -349,11 +357,11 @@ const probe_stim_duration = 133;
      }
     ]
 //fixation//
+  //fixation//
    const fixation = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<div style="font-size:60px;">+</div>',
     choices: "NO_KEYS",
-    trial_duration: Math.random() * (600 - 400) + 400,
     trial_duration: debug
         ? 1
         : Math.random() * (600 - 400) + 400,
@@ -364,39 +372,33 @@ const probe_stim_duration = 133;
     type: jsPsychHtmlKeyboardResponse,
     stimulus: jsPsych.timelineVariable('prime'),
     choices: "NO_KEYS",
-	trial_duration: prime_duration,
-  trial_duration: debug
-        ? 1
-        : Math.random() * (600 - 400) + 400,
-        data : { task : 'prime'}
-   }
-
+	trial_duration: durations.prime_duration,
+   function(){return durations.prime_duration},
+    data:{
+        task:"prime"
+    }
+}
 //blank//
    const blank = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: ' ',
     choices: "NO_KEYS",
-	trial_duration: blank_duration,
-  trial_duration: debug
-        ? 1
-        : Math.random() * (600 - 400) + 400,
-        data : { task : 'blank'}
-   }
-
+	trial_duration: durations.blank_duration,
+   function(){return durations.blank_duration},
+    data:{
+        task:"blank"
+    }
+}
 //probe//
     const probe_trial = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: jsPsych.timelineVariable('probe'),
     choices: ["a", "i", "d", "n"],
     stimulus_duration: function() {
-        console.log("stimdur:", probe_stim_duration);
-        return probe_stim_duration; 
+        console.log("stimdur:", durations.probe_stim_duration);
+        return durations.probe_stim_duration; 
     },
-    trial_duration: probe_duration,
-    trial_duration: debug
-        ? 1
-        : Math.random() * (600 - 400) + 400,
-        data : { task : 'fixation'},
+    trial_duration: durations.probe_duration, 
     response_ends_trial: false,   
     data: {
         correct_response: jsPsych.timelineVariable('correct_response'),
@@ -668,18 +670,23 @@ experimental_blocks.forEach((block, index) => {
 const experiment_end = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
-   <div style="text-align:center; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:24px; max-width:800px;">
       <h2>Kísérlet vége</h2>
       <p>Köszönjük, hogy részt vettél a vizsgálatban!</p>
-      <p>A kísérlet végén <strong>0</strong> Ft-od maradt.</p>
       <p>Az alábbi linken tudod jelezni a részvételt a <em>Pszichológiai kísérletben és tudományos aktivitásban való részvétel</em> nevű kurzuson:</p>
       <p><a href="https://forms.gle/AKSpNSLcB9VzeLEDA" target="_blank">https://forms.gle/AKSpNSLcB9VzeLEDA</a></p>
-      <p>Nyomj meg egy billentyűt a befejezéshez.</p>
-    </div>`,
-  choices: "Vége",
+      <p>Nyomj meg egy billentyűt a befejezéshez.</p>`,
+  choices: ["Vége"],
 };
 
-timeline.push(welcome, fullscreen, informed_consent, data_handling, demographic_timeline, instructions,all_practice, full_experiment,experiment_end,);
+const data_save = {
+  type: jsPsychCallFunction,
+  func: function() {
+    const csv_data = jsPsych.data.get().csv();
+    jatos.submitResultData(csv_data)
+  }
+};
+
+timeline.push(welcome, fullscreen, informed_consent, data_handling, demographic_timeline, instructions,all_practice, full_experiment,experiment_end, data_save);
 jsPsych.run(timeline) 
     </script>
   </body>
