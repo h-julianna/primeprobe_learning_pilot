@@ -1,0 +1,14 @@
+p{
+  text-align: justify;
+  max-width:800px;
+  margin: auto;
+  margin-bottom: 20px;
+}
+ul {
+  text-align: left;
+  list-style-position: inside;
+  margin-left: 20px;
+  }
+li {
+  margin-bottom: 5px;
+}    
