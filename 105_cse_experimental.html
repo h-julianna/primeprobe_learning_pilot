@@ -46,11 +46,9 @@
     }
   });
 
-
-      /*data handling and informed consent*/
 //debug mode
   // Get URL query parameters
-var debug = true; // set to false for normal timings
+var debug = false; // set to false for normal timings
 console.log("Debug mode:", debug);
 
 const durations = {
@@ -181,8 +179,8 @@ const instructions = {
                 Ezt követően megjelenik a célinger, ami vagy azonos („FEL”) vagy ellentétes („LE”) lesz az előtte bemutatott iránnyal.
                 A feladatod az lesz, hogy minél gyorsabban és pontosabban eltaláld a célinger irányát a hozzárendelt billentyű megnyomásával.</p> 
                 <p>Kérlek helyezd a billentyűzetre a kezedet a képen látható módon:</p>
-                <p>A bal középső ujjadat tedd az „a”-ra, ez lesz  a "BAL" irány. A mutató ujjadat a „d”-re, ez fogja jelölni a "JOBB" irányt. 
-                 A jobb mutató ujjadat helyezd az „n”-re, ez lesz a "LE" irány. Míg a jobb középső ujjadat pedig tedd az „i”-re, ami a "FEL" irányt fogja jelölni! </p>
+                <p>A bal középső ujjadat tedd az „a”-ra, ez lesz  a "BAL" irány. A mutató ujjadat a „l”-re, ez fogja jelölni a "JOBB" irányt. 
+                 A jobb mutató ujjadat helyezd az „n”-re, ez lesz a "LE" irány. Míg a jobb középső ujjadat pedig tedd az „e”-re, ami a "FEL" irányt fogja jelölni! </p>
                 <img src="Experimental material/instruction_pic.png" alt="Hand placement instructions" style="width: 40%; height: 40%;">
                 <p style="text-align: center;"><em>Amennyiben készen állsz a kísérlet megkezdésére, nyomd meg a space billentyűt!</em></p>`,
             choices: [" "],
@@ -190,7 +188,7 @@ const instructions = {
 // ready-to-go stimuli converted from the a randomized JSON
 const randomized_stimuli = prime_probe_trials.trials.map((block, block_index) => {
   const formatted_block = block.map(trial => {
-    const primeHTML = `<span style="font-size: 35px;">${trial.prime.replace(/\n/g, "<br>")}</span>`;
+    const primeHTML = `<span style="font-size: 40px;">${trial.prime.replace(/\n/g, "<br>")}</span>`;
     let probeColorStyle = "";
     if (trial.color === "red") {
       probeColorStyle = "color: #e60602;"; // red
@@ -198,7 +196,7 @@ const randomized_stimuli = prime_probe_trials.trials.map((block, block_index) =>
       probeColorStyle = "color: #000000;"; // black
     }
 
-    const probeHTML = `<span style="font-size: 35px; ${probeColorStyle}">${trial.probe}</span>`;
+    const probeHTML = `<span style="font-size: 40px; ${probeColorStyle}">${trial.probe}</span>`;
 //dynamic, useful when we'll want to add more colors
     return {
       prime: primeHTML,
@@ -235,123 +233,123 @@ const probe_stim_duration = 133;
  //defining the trials
     const stimulus = [
      {  
-        prime: '<span style="font-size: 35px;">le<br>le<br>le</span>',
-        probe: '<span style="font-size: 35px;">fel</span>',
+        prime: '<span style="font-size: 40px;">le<br>le<br>le</span>',
+        probe: '<span style="font-size: 40px;">fel</span>',
         congruency: 'incongruent',
-        correct_response: 'i',
+        correct_response: 'e',
         name: 'black_stimulus'
      },
      {  
-        prime: '<span style="font-size: 35px;">fel<br>fel<br>fel</span>',
-        probe: '<span style="font-size: 35px;">le</span>',
+        prime: '<span style="font-size: 40px;">fel<br>fel<br>fel</span>',
+        probe: '<span style="font-size: 40px;">le</span>',
         congruency: 'incongruent',
         correct_response: 'n',
         name: 'black_stimulus'
 
      },
      {
-        prime: '<span style="font-size: 35px;">le<br>le<br>le</span>',
-        probe: '<span style="font-size: 35px;">le</span>',
+        prime: '<span style="font-size: 40px;">le<br>le<br>le</span>',
+        probe: '<span style="font-size: 40px;">le</span>',
         congruency: 'congruent',
         correct_response: 'n',
         name: 'black_stimulus'
      },
      {
         
-        prime: '<span style="font-size: 35px;">fel<br>fel<br>fel</span>',
-        probe: '<span style="font-size: 35px;">fel</span>',
+        prime: '<span style="font-size: 40px;">fel<br>fel<br>fel</span>',
+        probe: '<span style="font-size: 40px;">fel</span>',
         congruency: 'congruent',
-        correct_response: 'i',
+        correct_response: 'e',
         name: 'black_stimulus'
      },
      {
          
-        prime: '<span style="font-size: 35px;">bal<br>bal<br>bal</span>',
-        probe: '<span style="font-size: 35px;">jobb</span>',
+        prime: '<span style="font-size: 40px;">bal<br>bal<br>bal</span>',
+        probe: '<span style="font-size: 40px;">jobb</span>',
         congruency: 'incongruent',
-        correct_response: 'd',
+        correct_response: 'l',
         name: 'black_stimulus'
      },
      {
-        prime: '<span style="font-size: 35px;">jobb<br>jobb<br>jobb</span>',
-        probe: '<span style="font-size: 35px;">bal</span>',
+        prime: '<span style="font-size: 40px;">jobb<br>jobb<br>jobb</span>',
+        probe: '<span style="font-size: 40px;">bal</span>',
         congruency: 'incongruent',
         correct_response: 'a',
         name: 'black_stimulus'
      },
      {
-        prime: '<span style="font-size: 35px;">bal<br>bal<br>bal</span>',
-        probe: '<span style="font-size: 35px;">bal</span>',
+        prime: '<span style="font-size: 40px;">bal<br>bal<br>bal</span>',
+        probe: '<span style="font-size: 40px;">bal</span>',
         congruency: 'congruent',
         correct_response: 'a',
         name: 'black_stimulus'
      },
      {
-        prime: '<span style="font-size: 35px;">jobb<br>jobb<br>jobb</span>',
-        probe: '<span style="font-size: 35px;">jobb</span>',
+        prime: '<span style="font-size: 40px;">jobb<br>jobb<br>jobb</span>',
+        probe: '<span style="font-size: 40px;">jobb</span>',
         congruency: 'congruent',
-        correct_response: 'd',
+        correct_response: 'l',
         name: 'black_stimulus'
      }
     ]
     const red_stimulus = [
      {
-        prime: '<span style="font-size: 35px;">le<br>le<br>le</span>',
-        probe: '<span style="font-size: 35px; color: #e60602;">fel</span>',
+        prime: '<span style="font-size: 40px;">le<br>le<br>le</span>',
+        probe: '<span style="font-size: 40px; color: #e60602;">fel</span>',
         congruency: 'incongruent',
-        correct_response: 'i',
+        correct_response: 'e',
         name: 'red_stimulus'
      },
      {  
-        prime: '<span style="font-size: 35px;">fel<br>fel<br>fel</span>',
-        probe: '<span style="font-size: 35px; color: #e60602;">le</span>',
+        prime: '<span style="font-size: 40px;">fel<br>fel<br>fel</span>',
+        probe: '<span style="font-size: 40px; color: #e60602;">le</span>',
         congruency: 'incongruent',
         correct_response: 'n',
         name: 'red_stimulus'
 
      },
      {
-        prime: '<span style="font-size: 35px;">le<br>le<br>le</span>',
-        probe: '<span style="font-size: 35px; color: #e60602;">le</span>',
+        prime: '<span style="font-size: 40px;">le<br>le<br>le</span>',
+        probe: '<span style="font-size: 40px; color: #e60602;">le</span>',
         congruency: 'congruent',
         correct_response: 'n',
         name: 'red_stimulus'
      },
      {
         
-        prime: '<span style="font-size: 35px;">fel<br>fel<br>fel</span>',
-        probe: '<span style="font-size: 35px; color: #e60602;">fel</span>',
+        prime: '<span style="font-size: 40px;">fel<br>fel<br>fel</span>',
+        probe: '<span style="font-size: 40px; color: #e60602;">fel</span>',
         congruency: 'congruent',
-        correct_response: 'i',
+        correct_response: 'e',
         name: 'red_stimulus'
      },
      {
          
-        prime: '<span style="font-size: 35px;">bal<br>bal<br>bal</span>',
-        probe: '<span style="font-size: 35px; color: #e60602;">jobb</span>',
+        prime: '<span style="font-size: 40px;">bal<br>bal<br>bal</span>',
+        probe: '<span style="font-size: 40px; color: #e60602;">jobb</span>',
         congruency: 'incongruent',
-        correct_response: 'd',
+        correct_response: 'l',
         name: 'red_stimulus'
      },
      {
-        prime: '<span style="font-size: 35px;">jobb<br>jobb<br>jobb</span>',
-        probe: '<span style="font-size: 35px; color: #e60602;">bal</span>',
+        prime: '<span style="font-size: 40px;">jobb<br>jobb<br>jobb</span>',
+        probe: '<span style="font-size: 40px; color: #e60602;">bal</span>',
         congruency: 'incongruent',
         correct_response: 'a',
         name: 'red_stimulus'
      },
      {
-        prime: '<span style="font-size: 35px;">bal<br>bal<br>bal</span>',
-        probe: '<span style="font-size: 35px; color: #e60602;">bal</span>',
+        prime: '<span style="font-size: 40px;">bal<br>bal<br>bal</span>',
+        probe: '<span style="font-size: 40px; color: #e60602;">bal</span>',
         congruency: 'congruent',
         correct_response: 'a',
         name: 'red_stimulus'
      },
      {
-        prime: '<span style="font-size: 35px;">jobb<br>jobb<br>jobb</span>',
-        probe: '<span style="font-size: 35px; color: #e60602;">jobb</span>',
+        prime: '<span style="font-size: 40px;">jobb<br>jobb<br>jobb</span>',
+        probe: '<span style="font-size: 40px; color: #e60602;">jobb</span>',
         congruency: 'congruent',
-        correct_response: 'd',
+        correct_response: 'l',
         name: 'red_stimulus'
      }
     ]
@@ -392,7 +390,7 @@ const probe_stim_duration = 133;
     const probe_trial = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: jsPsych.timelineVariable('probe'),
-    choices: ["a", "i", "d", "n"],
+   choices: ["a", "e", "l", "n"],
     stimulus_duration: function() {
         console.log("stimdur:", durations.probe_stim_duration);
         return durations.probe_stim_duration; 
@@ -501,8 +499,8 @@ for (let i = 1; i < allTrials.length; i++) {
     (getAxis(current) === getAxis(prev)) ||
     (
       (current.correct_response === "a" && prev.correct_response === "a") ||
-      (current.correct_response === "d" && prev.correct_response === "d") ||
-      (current.correct_response === "i" && prev.correct_response === "i") ||
+      (current.correct_response === "l" && prev.correct_response === "l") ||
+      (current.correct_response === "e" && prev.correct_response === "e") ||
       (current.correct_response === "n" && prev.correct_response === "n")
     )
   ) &&
