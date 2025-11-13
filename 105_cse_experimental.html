@@ -40,17 +40,17 @@
 
       console.log(probe_duration);
     },
-
+ */
     on_finish: () => {
-      jatos.endStudyAndRedirect("https://forms.https://forms.gle/AKSpNSLcB9VzeLEDA/Wd5XzqnKsquPK7vr5", jsPsych.data.get().csv());
-    } */
+      jatos.endStudyAndRedirect("https://forms.gle/AKSpNSLcB9VzeLEDA/Wd5XzqnKsquPK7vr5", jsPsych.data.get().csv());
+    }
   });
 
 
       /*data handling and informed consent*/
 //debug mode
   // Get URL query parameters
-var debug = false; // set to false for normal timings
+var debug = true; // set to false for normal timings
 console.log("Debug mode:", debug);
 
 const durations = {
@@ -670,22 +670,13 @@ const experiment_end = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
       <h2>Kísérlet vége</h2>
-      <p>Köszönjük, hogy részt vettél a vizsgálatban!</p>
-      <p>Az alábbi linken tudod jelezni a részvételt a <em>Pszichológiai kísérletben és tudományos aktivitásban való részvétel</em> nevű kurzuson:</p>
-      <p><a href="https://forms.gle/AKSpNSLcB9VzeLEDA" target="_blank">https://forms.gle/AKSpNSLcB9VzeLEDA</a></p>
-      <p>Nyomj meg egy billentyűt a befejezéshez.</p>`,
+      <h3>Köszönjük, hogy részt vettél a vizsgálatban!</h3>
+      
+      <p>Hogy megkaphasd a pontjaidat, nyomd meg a "Vége" gombot</p>`,
   choices: ["Vége"],
 };
 
-const data_save = {
-  type: jsPsychCallFunction,
-  func: function() {
-    const csv_data = jsPsych.data.get().csv();
-    jatos.submitResultData(csv_data)
-  }
-};
-
-timeline.push(welcome, fullscreen, informed_consent, data_handling, demographic_timeline, instructions,all_practice, full_experiment,experiment_end, data_save);
+timeline.push(welcome, fullscreen, informed_consent, data_handling, demographic_timeline, instructions,all_practice, full_experiment,experiment_end);
 jsPsych.run(timeline) 
     </script>
   </body>
