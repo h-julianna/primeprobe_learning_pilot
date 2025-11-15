@@ -128,7 +128,9 @@ const prime_probe_trials_prac = {
         "correct_response": "a",
         "name": "black_horizontal_con_1",
         "color": "black"
-      },
+      }
+    ],
+    [
       {
         "prime": "fel\nfel\nfel",
         "probe": "fel",
