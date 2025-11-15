@@ -43,7 +43,7 @@
     },
  */
     on_finish: () => {
-      jatos.endStudyAndRedirect("https://forms.gle/AKSpNSLcB9VzeLEDA/Wd5XzqnKsquPK7vr5", jsPsych.data.get().csv());
+      jatos.endStudyAndRedirect("https://forms.gle/AKSpNSLcB9VzeLEDA", jsPsych.data.get().csv());
     }
   });
 
@@ -81,7 +81,7 @@ jsPsych.data.addProperties({subj_code: subj_code}); //adding the subject code to
 const welcome = {
             type: jsPsychHtmlButtonResponse,
             stimulus: `
-            <img src="Experimental material/University_logo.png" alt="University Logo" style="width: 300px; display: block; margin: auto;">
+            <img src="University_logo.png" alt="University Logo" style="width: 300px; display: block; margin: auto;">
             <h2>Üdvözlünk a Metatudomány kutatócsoport vizsgálatában!</h2>
                 <p>Egy tudományos kutatásban veszel részt, amelynek vezetője Bognár Miklós, az ELTE Affektív Pszichológia Tanszékének kutatója. 
                 A kutatás célja megvizsgálni, hogy különböző ingertípusok miként hatnak a reakcióidőre.</p>
@@ -175,7 +175,7 @@ const age_neptun = {
       validation: function(response) {
         return /^[A-Z0-9]{6}$/.test(response)
           ? true
-          : null;
+          : "A NEPTUN kód 6 nagybetűből/számból álljon!";
       }
     }
   ],
@@ -198,9 +198,9 @@ const instructions = {
                 Ezt követően megjelenik a célinger, ami vagy azonos („FEL”) vagy ellentétes („LE”) lesz az előtte bemutatott iránnyal.
                 A feladatod az lesz, hogy minél gyorsabban és pontosabban eltaláld a célinger irányát a hozzárendelt billentyű megnyomásával.</p> 
                 <p>Kérlek helyezd a billentyűzetre a kezedet a képen látható módon:</p>
-                <p>A bal középső ujjadat tedd az „a”-ra, ez lesz  a "BAL" irány. A jobb középső ujjadat a „l”-re, ez fogja jelölni a "JOBB" irányt. 
-                 A jobb mutató ujjadat helyezd az „n”-re, ez lesz a "LE" irány. Míg a bal mutató ujjadat pedig tedd az „e”-re, ami a "FEL" irányt fogja jelölni! </p>
-                <img src="Experimental material/instruction_pic.png" alt="Hand placement instructions" style="width: 40%; height: 40%;">
+                <p>A bal középső ujjadat tedd az „A”-ra, ez lesz  a "BAL" irány. A jobb gyűrűsujjadat a „L”-re, ez fogja jelölni a "JOBB" irányt. 
+                 A jobb mutató ujjadat helyezd az „N”-re, ez lesz a "LE" irány. Míg a bal mutató ujjadat pedig tedd az „E”-re, ami a "FEL" irányt fogja jelölni! </p>
+                <img src="NEWinstruction_pic.png" alt="Hand placement instructions" style="width: 40%; height: 40%;">
                 <p style="text-align: center;"><em>Amennyiben készen állsz a kísérlet megkezdésére, nyomd meg a space billentyűt!</em></p>`,
             choices: [" "],
         };
@@ -464,11 +464,39 @@ const practice_intermission = {
 };
 
 const practice_end = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<p style="text-align: center; max-width: 800px; margin: auto; font-size: 24px">A gyakorló rész véget ért, a kísérleti blokkok következnek.
-        Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`,
-    choices: "ALL_KEYS",
-}
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: `
+    <div style="
+      padding-bottom: 350px;   /* <-- increase this value to move text higher */
+      max-width: 800px; 
+      margin: 40px auto; 
+      font-size: 24px;
+    ">
+      <p style="
+        text-align: justify;
+        margin: 0;
+      ">
+        A gyakorló rész véget ért. A kísérleti blokkok következnek. 
+        Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.
+        <span style="display:inline-block; width:100%;"></span>
+      </p>
+    </div>
+
+    <img 
+      src="NEWinstruction_pic.png" 
+      alt="Hand placement instructions"
+      style="
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 55%;
+        max-width: 600px;
+      "
+    >
+  `,
+  choices: "ALL_KEYS"
+};
 
 const randomized_prac_stimuli = prime_probe_trials_prac.trials.map((block, block_index) => {
 const formatted_prac_block = block.map(trial => {
@@ -503,11 +531,54 @@ const selected_prac_blocks = shuffled_prac_blocks.slice(1, 2);
 
 const randomized_prac_stimuli_per_participant = selected_prac_blocks
 
+const prac_cutoff = 1000;
+const feedback_duration = 700
+
+const prac_feedback = {
+  type: jsPsychHtmlKeyboardResponse,
+  
+  stimulus: function() {
+    const last = jsPsych.data.getLastTrialData().values()[0];
+    
+    if (last.rt === null || last.rt > prac_cutoff) {
+      // too slow
+      return "<div style='font-size: 35px; color: black;'>Túl lassú!</div>";
+    } else if (!last.correct) {
+      // incorrect
+      return "<div style='font-size: 35px; color: black;'>Hibás!</div>";
+    } else {
+      // correct & fast → show nothing
+      return "<div></div>";
+    }
+  },
+
+  choices: "NO_KEYS",
+
+  trial_duration: function() {
+    const last = jsPsych.data.getLastTrialData().values()[0];
+    
+    if (last.rt === null || last.rt > prac_cutoff || !last.correct) {
+      return feedback_duration;   // show feedback for errors or slow responses
+    } else {
+      return 33;                  // short blank for correct & fast responses
+    }
+  }
+};
+
+const prac_feedback_conditional = {
+  timeline: [prac_feedback],
+  conditional_function: function() {
+    var last = jsPsych.data.getLastTrialData().values()[0];
+    // show feedback ONLY if incorrect or too slow
+    return !(last.correct && last.rt <= prac_cutoff);
+  }
+};
+
 const practice_blocks = randomized_prac_stimuli_per_participant.map((block_stimuli, i) => {
   return {
     timeline: [
       {
-        timeline: [fixation, prime_trial, blank, probe_trial],
+        timeline: [fixation, prime_trial, blank, probe_trial, prac_feedback],
         timeline_variables: block_stimuli,
         randomize_order: false,
         loop_function: function(data) {
