@@ -7,6 +7,7 @@
         <script src='jspsych/dist/plugin-html-button-response.js'></script>
         <script src='jspsych/dist/plugin-fullscreen.js'></script>
         <script src='mytrials.js'></script>
+        <script src='mytrials_practice.js'></script>
         <script src='jspsych/dist/plugin-html-slider-response.js'></script>
         <script src='jspsych/dist/plugin-survey-text.js'></script>
         <script src='jspsych/dist/plugin-survey-multi-choice.js'></script>
@@ -156,11 +157,29 @@ type: jsPsychHtmlButtonResponse,
 //demographic informations
 const age_neptun = {
     type: jsPsychSurveyText,
-    questions: [
-        {prompt: "Hány éves vagy?", name: "age", required: true},
-        {prompt: "Mi a NEPTUN kódod?", name: "neptun", required: true}
-],
-    button_label: "Tovább"
+      questions: [
+    {
+      prompt: "Hány éves vagy?",
+      name: "age",
+      required: true,
+      validation: function(response) {
+        return /^[0-9]+$/.test(response) 
+          ? true 
+          : "Kérlek, csak számokat adj meg!";
+      }
+    },
+    {
+      prompt: "Mi a NEPTUN kódod?",
+      name: "neptun",
+      required: true,
+      validation: function(response) {
+        return /^[A-Z0-9]{6}$/.test(response)
+          ? true
+          : null;
+      }
+    }
+  ],
+  button_label: "Tovább"
 };
 const gender = {
     type: jsPsychSurveyMultiChoice,
@@ -179,8 +198,8 @@ const instructions = {
                 Ezt követően megjelenik a célinger, ami vagy azonos („FEL”) vagy ellentétes („LE”) lesz az előtte bemutatott iránnyal.
                 A feladatod az lesz, hogy minél gyorsabban és pontosabban eltaláld a célinger irányát a hozzárendelt billentyű megnyomásával.</p> 
                 <p>Kérlek helyezd a billentyűzetre a kezedet a képen látható módon:</p>
-                <p>A bal középső ujjadat tedd az „a”-ra, ez lesz  a "BAL" irány. A mutató ujjadat a „l”-re, ez fogja jelölni a "JOBB" irányt. 
-                 A jobb mutató ujjadat helyezd az „n”-re, ez lesz a "LE" irány. Míg a jobb középső ujjadat pedig tedd az „e”-re, ami a "FEL" irányt fogja jelölni! </p>
+                <p>A bal középső ujjadat tedd az „a”-ra, ez lesz  a "BAL" irány. A jobb középső ujjadat a „l”-re, ez fogja jelölni a "JOBB" irányt. 
+                 A jobb mutató ujjadat helyezd az „n”-re, ez lesz a "LE" irány. Míg a bal mutató ujjadat pedig tedd az „e”-re, ami a "FEL" irányt fogja jelölni! </p>
                 <img src="Experimental material/instruction_pic.png" alt="Hand placement instructions" style="width: 40%; height: 40%;">
                 <p style="text-align: center;"><em>Amennyiben készen állsz a kísérlet megkezdésére, nyomd meg a space billentyűt!</em></p>`,
             choices: [" "],
@@ -451,89 +470,111 @@ const practice_end = {
     choices: "ALL_KEYS",
 }
 
-function createPracticeStimuli(stimulus, red_stimulus) {
-  const n_total = 16;
-  const n_red = 4;
-  const n_black = 12;
+const randomized_prac_stimuli = prime_probe_trials_prac.trials.map((block, block_index) => {
+const formatted_prac_block = block.map(trial => {
+const primeHTML = `<span style="font-size: 40px;">${trial.prime.replace(/\n/g, "<br>")}</span>`;
+    let probeColorStyle = "";
+    if (trial.color === "red") {
+      probeColorStyle = "color: #e60602;"; // red
+    } else if (trial.color === "black") {
+      probeColorStyle = "color: #000000;"; // black
+    }
+const probeHTML = `<span style="font-size: 40px; ${probeColorStyle}">${trial.probe}</span>`;
 
-  const n_red_congruent = 2;
-  const n_red_incongruent = 2;
-  const n_black_congruent = 6;
-  const n_black_incongruent = 6;
+    return {
+      prime: primeHTML,
+      probe: probeHTML,
+      congruency: trial.congruency,
+      correct_response: trial.correct_response,
+      color: trial.color,
+      name: trial.name, 
+      block: block_index + 1 // label each trial with its block number
+    };
+  });
 
-  // Split by congruency
-  const blackCongruent = stimulus.filter(s => s.congruency === "congruent");
-  const blackIncongruent = stimulus.filter(s => s.congruency === "incongruent");
-  const redCongruent = red_stimulus.filter(s => s.congruency === "congruent");
-  const redIncongruent = red_stimulus.filter(s => s.congruency === "incongruent");
+  return formatted_prac_block;
+});
 
-  // sample (with replacement if needed)
-  const selected = [
-    ...jsPsych.randomization.sampleWithReplacement(blackCongruent, n_black_congruent),
-    ...jsPsych.randomization.sampleWithReplacement(blackIncongruent, n_black_incongruent),
-    ...jsPsych.randomization.sampleWithReplacement(redCongruent, n_red_congruent),
-    ...jsPsych.randomization.sampleWithReplacement(redIncongruent, n_red_incongruent),
-  ];
+console.log("Loaded randomized practice blocks:", randomized_prac_stimuli.length);
 
-  let allTrials = jsPsych.randomization.shuffle(selected);
+const shuffled_prac_blocks = jsPsych.randomization.shuffle(randomized_prac_stimuli);
+const selected_prac_blocks = shuffled_prac_blocks.slice(1, 2);
 
-  function getSignature(trial) {
-    return `${trial.correct_response}_${trial.congruency}_${trial.name}`;
-  }
 
-  let ordered = [allTrials[0]];
+const randomized_prac_stimuli_per_participant = selected_prac_blocks
 
-for (let i = 1; i < allTrials.length; i++) {
-  let current = allTrials[i];
-  let prev = ordered[ordered.length - 1];
+const practice_blocks = randomized_prac_stimuli_per_participant.map((block_stimuli, i) => {
+  return {
+    timeline: [
+      {
+        timeline: [fixation, prime_trial, blank, probe_trial],
+        timeline_variables: block_stimuli,
+        randomize_order: false,
+        loop_function: function(data) {
+	        if(debug == 0){
+            console.log(data);
+            var correct_trials = data.filter({task: "probe",correct: true}).count();
+            console.log(correct_trials);
+            var total_trials = data.filter({task: "probe"}).count();
+            
+            if (total_trials > 0) {
+                var accuracy = (correct_trials / total_trials) * 100;
+                console.log("Accuracy:", accuracy + "%");
+                if (accuracy >= 80) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }else{
+      return false;
+       }
+      }}
+    ],
+    on_timeline_finish: function() {
+      const block_data = jsPsych.data.get().last(block_stimuli.length).values();
 
-  function getAxis(trial) {
-    return ["a", "d"].includes(trial.correct_response) ? "horizontal" : "vertical";
-  }
+      for (let t = 1; t < block_data.length; t++) {
+        const prev = block_data[t - 1];
+        const curr = block_data[t];
 
-  let attempts = 0;
-  while (
-  (
-    getSignature(current) === getSignature(prev) ||                 
-    (current.name === "red_stimulus" && prev.name === "red_stimulus") || 
-    (getAxis(current) === getAxis(prev)) ||
-    (
-      (current.correct_response === "a" && prev.correct_response === "a") ||
-      (current.correct_response === "l" && prev.correct_response === "l") ||
-      (current.correct_response === "e" && prev.correct_response === "e") ||
-      (current.correct_response === "n" && prev.correct_response === "n")
-    )
-  ) &&
-  attempts < allTrials.length
-){
-    // find a safe trial to swap in
-    let swapIndex = allTrials.findIndex(
-      (t, idx) =>
-        idx > i &&
-        getSignature(t) !== getSignature(prev) &&
-        !(t.name === "red_stimulus" && prev.name === "red_stimulus") &&
-        getAxis(t) !== getAxis(prev)                                  // only swap with opposite axis
-    );
+        //extracting name and color
+        const prevName = prev.name || "";
+        const currName = curr.name || "";
+        const prevColor = prev.color || "";
+        const currColor = curr.color || "";
 
-    if (swapIndex === -1) break;
-    [allTrials[i], allTrials[swapIndex]] = [allTrials[swapIndex], allTrials[i]];
-    current = allTrials[i];
-    attempts++;
-  }
+        // consecutive red trials check
+        if (prevColor === "red" && currColor === "red") {
+          console.error(
+            `Two consecutive red trials detected in block ${i + 1} (trials ${t} & ${t + 1}): ${prevName} -> ${currName}`
+          );
+          jsPsych.endExperiment("Experiment stopped: consecutive red trials detected.");
+          return;
+        }
 
-  ordered.push(current);
-}
+        //directional orientation alternation check
+        const prevIsVertical = prevName.includes("vertical");
+        const currIsVertical = currName.includes("vertical");
+        const prevIsHorizontal = prevName.includes("horizontal");
+        const currIsHorizontal = currName.includes("horizontal");
 
-  return ordered.slice(0, n_total);
-}
-const practicestimuli = createPracticeStimuli(stimulus, red_stimulus);
-const practice_block = {
-    timeline: [fixation, prime_trial, blank, probe_trial],
-    timeline_variables: practicestimuli,
-    randomize_order: false,
-    repetitions: 1,
-    //(kikommenteltem h ne fusson örökké ikszdé)//
-    loop_function: function(data) {
+        if ((prevIsVertical && currIsVertical) || (prevIsHorizontal && currIsHorizontal)) {
+          console.error(
+            `Orientation alternation broken in block ${i + 1} (trials ${t} & ${t + 1}): ${prevName} -> ${currName}`
+          );
+          jsPsych.endExperiment("Experiment stopped: two consecutive trials share the same orientation.");
+          return;
+        }
+      }
+
+      console.log(`Block ${i + 1} passed red–red and H–V alternation checks.`);
+    }
+  };
+});
+
+
+  /*loop_function: function(data) {
 	if(debug == 0){
         console.log(data);
         var correct_trials = data.filter({task: "probe",correct: true}).count();
@@ -554,9 +595,10 @@ const practice_block = {
 	return false;
     }
     }
-};
+}, */
+
 const all_practice = {
-    timeline: [practice_instructions, practice_block, practice_intermission, practice_block, practice_end]
+    timeline: [practice_instructions, practice_blocks, practice_intermission, practice_blocks, practice_end]
   }   
 
 //experimental blocks
