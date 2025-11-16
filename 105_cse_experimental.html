@@ -198,8 +198,8 @@ const instructions = {
                 Ezt követően megjelenik a célinger, ami vagy azonos („FEL”) vagy ellentétes („LE”) lesz az előtte bemutatott iránnyal.
                 A feladatod az lesz, hogy minél gyorsabban és pontosabban eltaláld a célinger irányát a hozzárendelt billentyű megnyomásával.</p> 
                 <p>Kérlek helyezd a billentyűzetre a kezedet a képen látható módon:</p>
-                <p>A bal középső ujjadat tedd az „A”-ra, ez lesz  a "BAL" irány. A jobb gyűrűsujjadat a „L”-re, ez fogja jelölni a "JOBB" irányt. 
-                 A jobb mutató ujjadat helyezd az „N”-re, ez lesz a "LE" irány. Míg a bal mutató ujjadat pedig tedd az „E”-re, ami a "FEL" irányt fogja jelölni! </p>
+                <p>A bal gyűrűsujjadat tedd az „A”-ra, ez lesz  a "BAL" irány. A jobb gyűrűsujjadat a „L”-re, ez fogja jelölni a "JOBB" irányt. 
+                 A jobb mutató ujjadat helyezd az „N”-re, ez lesz a "LE" irány. Míg a bal középső ujjadat pedig tedd az „E”-re, ami a "FEL" irányt fogja jelölni! </p>
                 <img src="NEWinstruction_pic.png" alt="Hand placement instructions" style="width: 40%; height: 40%;">
                 <p style="text-align: center;"><em>Amennyiben készen állsz a kísérlet megkezdésére, nyomd meg a space billentyűt!</em></p>`,
             choices: [" "],
@@ -249,129 +249,7 @@ const probe_duration = 1000;
 const prime_duration = 133;
 const blank_duration = 33;
 const probe_stim_duration = 133;
- //defining the trials
-    const stimulus = [
-     {  
-        prime: '<span style="font-size: 40px;">le<br>le<br>le</span>',
-        probe: '<span style="font-size: 40px;">fel</span>',
-        congruency: 'incongruent',
-        correct_response: 'e',
-        name: 'black_stimulus'
-     },
-     {  
-        prime: '<span style="font-size: 40px;">fel<br>fel<br>fel</span>',
-        probe: '<span style="font-size: 40px;">le</span>',
-        congruency: 'incongruent',
-        correct_response: 'n',
-        name: 'black_stimulus'
 
-     },
-     {
-        prime: '<span style="font-size: 40px;">le<br>le<br>le</span>',
-        probe: '<span style="font-size: 40px;">le</span>',
-        congruency: 'congruent',
-        correct_response: 'n',
-        name: 'black_stimulus'
-     },
-     {
-        
-        prime: '<span style="font-size: 40px;">fel<br>fel<br>fel</span>',
-        probe: '<span style="font-size: 40px;">fel</span>',
-        congruency: 'congruent',
-        correct_response: 'e',
-        name: 'black_stimulus'
-     },
-     {
-         
-        prime: '<span style="font-size: 40px;">bal<br>bal<br>bal</span>',
-        probe: '<span style="font-size: 40px;">jobb</span>',
-        congruency: 'incongruent',
-        correct_response: 'l',
-        name: 'black_stimulus'
-     },
-     {
-        prime: '<span style="font-size: 40px;">jobb<br>jobb<br>jobb</span>',
-        probe: '<span style="font-size: 40px;">bal</span>',
-        congruency: 'incongruent',
-        correct_response: 'a',
-        name: 'black_stimulus'
-     },
-     {
-        prime: '<span style="font-size: 40px;">bal<br>bal<br>bal</span>',
-        probe: '<span style="font-size: 40px;">bal</span>',
-        congruency: 'congruent',
-        correct_response: 'a',
-        name: 'black_stimulus'
-     },
-     {
-        prime: '<span style="font-size: 40px;">jobb<br>jobb<br>jobb</span>',
-        probe: '<span style="font-size: 40px;">jobb</span>',
-        congruency: 'congruent',
-        correct_response: 'l',
-        name: 'black_stimulus'
-     }
-    ]
-    const red_stimulus = [
-     {
-        prime: '<span style="font-size: 40px;">le<br>le<br>le</span>',
-        probe: '<span style="font-size: 40px; color: #e60602;">fel</span>',
-        congruency: 'incongruent',
-        correct_response: 'e',
-        name: 'red_stimulus'
-     },
-     {  
-        prime: '<span style="font-size: 40px;">fel<br>fel<br>fel</span>',
-        probe: '<span style="font-size: 40px; color: #e60602;">le</span>',
-        congruency: 'incongruent',
-        correct_response: 'n',
-        name: 'red_stimulus'
-
-     },
-     {
-        prime: '<span style="font-size: 40px;">le<br>le<br>le</span>',
-        probe: '<span style="font-size: 40px; color: #e60602;">le</span>',
-        congruency: 'congruent',
-        correct_response: 'n',
-        name: 'red_stimulus'
-     },
-     {
-        
-        prime: '<span style="font-size: 40px;">fel<br>fel<br>fel</span>',
-        probe: '<span style="font-size: 40px; color: #e60602;">fel</span>',
-        congruency: 'congruent',
-        correct_response: 'e',
-        name: 'red_stimulus'
-     },
-     {
-         
-        prime: '<span style="font-size: 40px;">bal<br>bal<br>bal</span>',
-        probe: '<span style="font-size: 40px; color: #e60602;">jobb</span>',
-        congruency: 'incongruent',
-        correct_response: 'l',
-        name: 'red_stimulus'
-     },
-     {
-        prime: '<span style="font-size: 40px;">jobb<br>jobb<br>jobb</span>',
-        probe: '<span style="font-size: 40px; color: #e60602;">bal</span>',
-        congruency: 'incongruent',
-        correct_response: 'a',
-        name: 'red_stimulus'
-     },
-     {
-        prime: '<span style="font-size: 40px;">bal<br>bal<br>bal</span>',
-        probe: '<span style="font-size: 40px; color: #e60602;">bal</span>',
-        congruency: 'congruent',
-        correct_response: 'a',
-        name: 'red_stimulus'
-     },
-     {
-        prime: '<span style="font-size: 40px;">jobb<br>jobb<br>jobb</span>',
-        probe: '<span style="font-size: 40px; color: #e60602;">jobb</span>',
-        congruency: 'congruent',
-        correct_response: 'l',
-        name: 'red_stimulus'
-     }
-    ]
 //fixation//
   //fixation//
    const fixation = {
@@ -406,21 +284,21 @@ const probe_stim_duration = 133;
     }
 }
 //probe//
-    const probe_trial = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: jsPsych.timelineVariable('probe'),
-   choices: ["a", "e", "l", "n"],
-    stimulus_duration: function() {
-        console.log("stimdur:", durations.probe_stim_duration);
-        return durations.probe_stim_duration; 
-    },
-    trial_duration: durations.probe_duration, 
-    response_ends_trial: false,   
-    data: {
-        correct_response: jsPsych.timelineVariable('correct_response'),
-        task: "probe",
-        congruency: jsPsych.timelineVariable('congruency'),
-        name: jsPsych.timelineVariable('name')
+const probe_trial = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: jsPsych.timelineVariable('probe'),
+  choices: ["a", "e", "l", "n"],
+  stimulus_duration: function() {
+    console.log("stimdur:", durations.probe_stim_duration);
+      return durations.probe_stim_duration; 
+      },
+  trial_duration: durations.probe_duration, 
+  response_ends_trial: false,   
+  data: {
+    correct_response: jsPsych.timelineVariable('correct_response'),
+    task: "probe",
+    congruency: jsPsych.timelineVariable('congruency'),
+    name: jsPsych.timelineVariable('name')
     },
     on_finish: function(data) {
         console.log("Response data:", data);
@@ -433,7 +311,7 @@ const probe_stim_duration = 133;
 const practice_instructions = {
         type: jsPsychHtmlKeyboardResponse,
         stimulus: `<h2>Gyakorló blokk</h2>
-            <p>A kísérlet megkezdése előtt egy rövid gyakorló blokk következik. Ebben a blokkban nem vonunk le pénzt a hibás válaszokért, azonban törekedj a minél gyorsabb és pontosabb válaszadásra! <br>
+            <p>A kísérlet megkezdése előtt egy rövid gyakorló blokk következik. Törekedj a minél gyorsabb és pontosabb válaszadásra! <br>
             Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.</p>`
 }
 
@@ -467,7 +345,7 @@ const practice_end = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: `
     <div style="
-      padding-bottom: 350px;   /* <-- increase this value to move text higher */
+      padding-bottom: 350px;ó
       max-width: 800px; 
       margin: 40px auto; 
       font-size: 24px;
@@ -477,7 +355,7 @@ const practice_end = {
         margin: 0;
       ">
         A gyakorló rész véget ért. A kísérleti blokkok következnek. 
-        Ha készen állsz, nyomj meg egy tetszőleges billentyűt a kezdéshez.
+        Ha készen állsz, nyomd meg a space billentyűt a kezdéshez.
         <span style="display:inline-block; width:100%;"></span>
       </p>
     </div>
@@ -495,7 +373,7 @@ const practice_end = {
       "
     >
   `,
-  choices: "ALL_KEYS"
+  choices:  [" "],
 };
 
 const randomized_prac_stimuli = prime_probe_trials_prac.trials.map((block, block_index) => {
@@ -643,30 +521,6 @@ const practice_blocks = randomized_prac_stimuli_per_participant.map((block_stimu
     }
   };
 });
-
-
-  /*loop_function: function(data) {
-	if(debug == 0){
-        console.log(data);
-        var correct_trials = data.filter({task: "probe",correct: true}).count();
-        console.log(correct_trials);
-        var total_trials = data.filter({task: "probe"}).count();
-        
-        if (total_trials > 0) {
-            var accuracy = (correct_trials / total_trials) * 100;
-            console.log("Accuracy:", accuracy + "%");
-            if (accuracy >= 80) {
-                return false;
-            } else {
-                return true;
-            }
-          
-        }
-    }else{
-	return false;
-    }
-    }
-}, */
 
 const all_practice = {
     timeline: [practice_instructions, practice_blocks, practice_intermission, practice_blocks, practice_end]
